@@ -1,62 +1,58 @@
-import numpy as np
+import sys
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
 
-def detect_jump_intervals_moving_avg(values, window=5, threshold=1.0):
-    """
-    基于移动平均的方法检测突变区间，并在每个区间内找到 90% 位置的点。
-    
-    参数:
-        values (np.array): 输入数据。
-        window (int): 移动平均的窗口大小。
-        threshold (float): 偏差阈值，用于判断是否为突变点。
-    
-    返回:
-        np.array: 每个突变区间内 90% 位置的点。
-    """
-    if len(values) < window:
-        return np.array([])
-    
-    # 计算移动平均值
-    moving_avg = np.convolve(values, np.ones(window)/window, mode='valid')
-    
-    # 计算每个点与移动平均值的偏差
-    deviations = np.abs(values[window-1:] - moving_avg)
-    
-    # 找到偏差超过阈值的点
-    jump_indices = np.where(deviations > threshold)[0] + window - 1
-    
-    # 合并连续的突变点形成突变区间
-    if len(jump_indices) == 0:
-        return np.array([])
-    
-    diff_jump = np.diff(jump_indices)
-    breaks = np.where(diff_jump != 1)[0] + 1
-    intervals = np.split(jump_indices, breaks)
-    
-    # 在每个突变区间内找到 90% 位置的点
-    result_points = []
-    for interval in intervals:
-        if len(interval) == 0:
-            continue
-        # 突变区间的起始和结束位置
-        start = interval[0]
-        end = interval[-1] + 1  # 结束位置需要加 1
-        # 计算 90% 位置的点
-        target_index = start + int(0.9 * (end - start))
-        # 找到最接近目标点的点
-        closest_index = np.argmin(np.abs(np.arange(start, end) - target_index))
-        result_points.append(closest_index)
-    
-    return np.array(result_points)
+class MyMplCanvas(FigureCanvas):
+    def __init__(self):
+        self.fig = Figure(figsize=(6, 4), dpi=100)
+        self.ax = self.fig.add_subplot(111)
+        super().__init__(self.fig)
 
-# 示例数据
-values = np.array([
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  # 平稳段
-    2, 3, 4, 5, 6, 7, 8, 9, 10, 11,  # 突变段（上升）
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  # 平稳段
-    10, 9, 8, 7, 6, 5, 4, 3, 2, 1,  # 突变段（下降）
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1   # 平稳段
-])
+        # 生成一些示例数据
+        self.x = [1, 2, 3, 4, 5]
+        self.y1 = [1, 4, 9, 16, 25]
+        self.y2 = [1, 2, 3, 4, 5]
+        
+        # 绘制两条曲线，并设置pickable为True
+        self.line1, = self.ax.plot(self.x, self.y1, label='y = x^2', picker=True)
+        self.line2, = self.ax.plot(self.x, self.y2, label='y = x', picker=True)
+        
+        self.ax.legend()
 
-# 运行函数
-jump_points = detect_jump_intervals_moving_avg(values, window=5, threshold=1.0)
-print("突变区间内 90% 位置的点:", jump_points)
+        # 绑定pick事件
+        self.mpl_connect('pick_event', self.on_pick)
+
+    def on_pick(self, event):
+        # 检测被点击的对象
+        artist = event.artist
+        if isinstance(artist, plt.Line2D):
+            print(f"你点击了曲线: {artist.get_label()}")
+            artist.set_linewidth(3)  # 改变被点击曲线的线宽
+            self.draw()  # 重绘图形
+
+class MyMainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle('Matplotlib 和 PyQt 集成')
+
+        # 创建MplCanvas实例
+        self.canvas = MyMplCanvas()
+
+        # 设置布局
+        layout = QVBoxLayout()
+        layout.addWidget(self.canvas)
+
+        # 设置主窗口的中心部件
+        central_widget = QWidget(self)
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+
+        self.show()
+
+# 运行PyQt应用
+app = QApplication(sys.argv)
+window = MyMainWindow()
+sys.exit(app.exec())

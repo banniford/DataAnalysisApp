@@ -2,9 +2,11 @@
 import warnings
 warnings.filterwarnings("ignore")
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
-from PyQt6.uic import loadUi
+from ui.Ui_DataAnalysis import Ui_MainWindow
 
 class MainWindow(QMainWindow):
-    def __init__(self, ui_path):
+    def __init__(self):
         super().__init__()
-        loadUi(ui_path, self)
+        self.main_ui = Ui_MainWindow()
+        self.main_ui.setupUi(self)
+        self.main_ui.comboBox2_1.addCheckableItems(['test', 'test1', 'test2'])
