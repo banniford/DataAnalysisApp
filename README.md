@@ -11,7 +11,7 @@
 &emsp;&emsp;安装 pipreqs 工具，如果尚未安装：
 
 ```shell
-pip install pipreqs
+pip install pipreqs -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
 ```
 
 &emsp;&emsp;切换到包含 app.py 文件的目录。

@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QComboBox, QMainWindow, QApplication, QLineEdit
+from PyQt6.QtWidgets import QComboBox, QMainWindow, QApplication, QLineEdit, QToolTip
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
  
@@ -7,7 +7,7 @@ from PyQt6.QtGui import QFont
 class CheckableComboBox(QComboBox):
     def __init__(self, parent=None):
         super(CheckableComboBox, self).__init__(parent)
-        # QToolTip.setFont(QFont('Times New Roman', 15))  # 设置提示框字体和字号
+        QToolTip.setFont(QFont('黑体', 11))  # 设置提示框字体和字号
         self.setLineEdit(QLineEdit())
         self.lineEdit().setReadOnly(True)
         self.view().clicked.connect(self.selectItemAction)
