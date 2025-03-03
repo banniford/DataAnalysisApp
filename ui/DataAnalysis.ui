@@ -228,6 +228,9 @@
     <property name="singleStep">
      <number>100</number>
     </property>
+    <property name="value">
+     <number>1000</number>
+    </property>
     <property name="displayIntegerBase">
      <number>10</number>
     </property>
@@ -276,6 +279,9 @@
     </property>
     <property name="singleStep">
      <number>100</number>
+    </property>
+    <property name="value">
+     <number>1000</number>
     </property>
     <property name="displayIntegerBase">
      <number>10</number>
