@@ -7,6 +7,7 @@ from service.FileManager import FileManager
 from service.DataAnalysis import DataAnalysis
 from service.Draw import Draw
 from service.ReportTable import ReportTable
+from datetime import datetime
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -26,6 +27,12 @@ class MainWindow(QMainWindow):
         self.main_ui.action_1.triggered.connect(self.file_manager.saveCSVFile)
 
         self.main_ui.checkBox_3.stateChanged.connect(self.changeDeltT)
+
+    def msg(self, msg:str):
+        # 打印时间在前面，格式化输出
+        msg = datetime.now().strftime("%Y-%m-%d %H:%M:%S") + " " + msg
+        self.main_ui.textEdit.append(msg)
+
 
     def changeDeltT(self):
         if self.main_ui.checkBox_3.isChecked():

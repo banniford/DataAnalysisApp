@@ -7,7 +7,7 @@ from PyQt6.QtGui import QFont
 class CheckableComboBox(QComboBox):
     def __init__(self, parent=None):
         super(CheckableComboBox, self).__init__(parent)
-        QToolTip.setFont(QFont('黑体', 11))  # 设置提示框字体和字号
+        # QToolTip.setFont(QFont('黑体', 12))  # 设置提示框字体和字号
         self.setLineEdit(QLineEdit())
         self.lineEdit().setReadOnly(True)
         self.view().clicked.connect(self.selectItemAction)

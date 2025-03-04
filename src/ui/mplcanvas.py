@@ -17,7 +17,7 @@ rcParams['axes.unicode_minus'] = False  # 使坐标轴刻度标签正常显示�
 from service.ReferenceLineManager import ReferenceLineManager
 
 class MplCanvas(FigureCanvas):
-    def __init__(self, parent=None, width=9, height=5, dpi=100):
+    def __init__(self, parent=None, width=10, height=5, dpi=100):
         self.fig,self.ax = plt.subplots(figsize=(width, height), dpi=dpi)
         super().__init__(self.fig)
         self.setParent(parent)
