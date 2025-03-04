@@ -11,32 +11,33 @@ class FileManager:
         self.file_path = None
         self.df = None
 
-    def ClearFile(self):
+    def clearFile(self):
         self.file_path = None
         self.df = None
         self.main_ui.comboBox2_1.clear()
         self.main_ui.comboBox2_2.clear()
 
 
-    def LoadCSVFile(self):
+    def loadCSVFile(self):
         self.file_path = QFileDialog.getOpenFileName(self.main_window, '选择CSV文件', '', 'CSV files(*.csv)')
         if not self.file_path[0]:  # 用户取消
             self.main_ui.textEdit.append("未选择 csv 文件")
-            self.ClearFile()
+            self.clearFile()
             return
         # 使用pandas读取csv文件
         try:
             self.df = pd.read_csv(self.file_path[0])
             self.main_ui.textEdit.append(f"文件 {self.file_path[0]} 加载成功")
-            table_header = self.data_analysis.get_table_header(self.df)
+            self.data_analysis.set_table_data(self.df)
+            table_header = self.data_analysis.get_table_header()
             self.addcomboBoxItems(table_header)
         except Exception as e:
             print(e)
             self.main_ui.textEdit.append(f"文件 {self.file_path[0]} 加载失败")
-            self.ClearFile()
+            self.clearFile()
 
         
-    def SaveCSVFile(self):
+    def saveCSVFile(self):
         save_path = QFileDialog.getSaveFileName(self.main_window, '保存 CSV 文件', '', 'CSV files(*.csv)')
         if not save_path[0]:  # 用户取消
             self.main_ui.textEdit.append("未选择保存路径")
@@ -48,6 +49,6 @@ class FileManager:
             print(e)
             self.main_ui.textEdit.append(f"文件 {save_path[0]} 保存失败")
 
-    def addcomboBoxItems(self, items: list):
+    def addComboBoxItems(self, items: list):
         self.main_ui.comboBox2_1.addCheckableItems(items)
         self.main_ui.comboBox2_2.addCheckableItems(items)

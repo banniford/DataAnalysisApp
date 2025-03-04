@@ -5,6 +5,8 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from ui.Ui_DataAnalysis import Ui_MainWindow
 from service.FileManager import FileManager
 from service.DataAnalysis import DataAnalysis
+from service.Draw import Draw
+from service.ReportTable import ReportTable
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -13,10 +15,24 @@ class MainWindow(QMainWindow):
         self.main_ui.setupUi(self)
         self.data_analysis = DataAnalysis(self)
         self.file_manager = FileManager(self,self.data_analysis)
+        self.draw = Draw(self)
+        self.report_table = ReportTable(self)
+        # 采集间隔
+        self.delt_T = 200
+        self.delt_T_set = self.main_ui.spinBox_0.value()
 
 
+        self.main_ui.action_0.triggered.connect(self.file_manager.loadCSVFile)
+        self.main_ui.action_1.triggered.connect(self.file_manager.saveCSVFile)
 
-        self.main_ui.action_0.triggered.connect(self.file_manager.LoadCSVFile)
-        self.main_ui.action_1.triggered.connect(self.file_manager.SaveCSVFile)
+        self.main_ui.checkBox_3.stateChanged.connect(self.changeDeltT)
+
+    def changeDeltT(self):
+        if self.main_ui.checkBox_3.isChecked():
+            self.main_ui.spinBox_0.setEnabled(False)
+            self.main_ui.spinBox_0.setValue(self.delt_T)
+        else:
+            self.main_ui.spinBox_0.setEnabled(True)
+            self.main_ui.spinBox_0.setValue(self.delt_T_set)
 
     

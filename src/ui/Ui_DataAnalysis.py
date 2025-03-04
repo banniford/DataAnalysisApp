@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'd:\work\DataAnalysisApp\ui\DataAnalysis.ui'
+# Form implementation generated from reading ui file '/media/pjh/7TB1/IEOS/Dev/yun/DataAnalysisApp/ui/DataAnalysis.ui'
 #
 # Created by: PyQt6 UI code generator 6.4.2
 #
@@ -208,7 +208,7 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_2.setProperty("value", 10.0)
         self.doubleSpinBox_2.setObjectName("doubleSpinBox_2")
         self.checkBox_3 = QtWidgets.QCheckBox(parent=self.centralwidget)
-        self.checkBox_3.setGeometry(QtCore.QRect(160, 10, 81, 31))
+        self.checkBox_3.setGeometry(QtCore.QRect(170, 10, 81, 31))
         font = QtGui.QFont()
         font.setFamily("黑体")
         font.setPointSize(11)
