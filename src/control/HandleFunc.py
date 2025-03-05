@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         self.main_ui = Ui_MainWindow()
         self.main_ui.setupUi(self)
         self.data_analysis = DataAnalysis(self)
-        self.file_manager = FileManager(self,self.data_analysis)
+        self.file_manager = FileManager(self)
         self.draw = Draw(self)
         self.report_table = ReportTable(self)
         # 采集间隔
@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
     def changeDeltT(self):
         if self.main_ui.checkBox_3.isChecked():
             self.main_ui.spinBox_0.setEnabled(False)
-            self.main_ui.spinBox_0.setValue(self.delt_T)
+            self.main_ui.spinBox_0.setValue(self.delt_T_set)
         else:
             self.main_ui.spinBox_0.setEnabled(True)
             self.main_ui.spinBox_0.setValue(self.delt_T_set)

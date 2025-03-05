@@ -14,14 +14,11 @@ prop = font_manager.FontProperties(fname=font_path)
 rcParams['font.sans-serif'] = prop.get_name()  # 根据名称设置字体
 rcParams['axes.unicode_minus'] = False  # 使坐标轴刻度标签正常显示正负号
 
-from service.ReferenceLineManager import ReferenceLineManager
-
 class MplCanvas(FigureCanvas):
     def __init__(self, parent=None, width=10, height=5, dpi=100):
         self.fig,self.ax = plt.subplots(figsize=(width, height), dpi=dpi)
         super().__init__(self.fig)
         self.setParent(parent)
-        self.line_manager = ReferenceLineManager(self.ax)
     
 
 

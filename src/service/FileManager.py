@@ -3,10 +3,9 @@ import os
 import pandas as pd
 
 class FileManager:
-    def __init__(self, main_window,data_analysis):
+    def __init__(self, main_window):
         self.main_window = main_window
         self.main_ui = main_window.main_ui
-        self.data_analysis = data_analysis
         self.cwd = os.getcwd()
         self.file_path = None
         self.df = None
@@ -17,8 +16,6 @@ class FileManager:
         self.main_ui.comboBox2_1.clear()
         self.main_ui.comboBox2_2.clear()
         
-        
-
 
     def loadCSVFile(self):
         self.file_path = QFileDialog.getOpenFileName(self.main_window, '选择CSV文件', '', 'CSV files(*.csv)')
@@ -29,10 +26,10 @@ class FileManager:
         # 使用pandas读取csv文件
         try:
             self.df = pd.read_csv(self.file_path[0])
-            self.main_window.msg(f"文件 {self.file_path[0]} 加载成功")
-            self.data_analysis.set_table_data(self.df)
-            table_header = self.data_analysis.get_table_header()
+            self.main_window.data_analysis.set_table_data(self.df)
+            table_header = self.main_window.data_analysis.get_table_header()
             self.addComboBoxItems(table_header)
+            self.main_window.msg(f"文件 {self.file_path[0]} 加载成功")
         except Exception as e:
             print(e)
             self.main_window.msg(f"文件 {self.file_path[0]} 加载失败")

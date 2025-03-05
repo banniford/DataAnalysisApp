@@ -7,10 +7,10 @@ class ReportTable:
         
 
 
-    def initTable(self):
+    def init_table(self):
         pass
 
-    def updateTable(self):
+    def update_table(self):
         pass
     
     

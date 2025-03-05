@@ -175,8 +175,8 @@ def update_jumps(val, df, line_manager):
     line_manager.lines.clear()
 
     # 重新检测突变点
-    # jumps = pandas_detect_jumps(df, threshold=val)
-    jumps = detect_jumps(df, threshold=val)
+    jumps = pandas_detect_jumps(df, threshold=val)
+    # jumps = detect_jumps(df, threshold=val)
     for pos in jumps:
         line_manager.add_line(pos)
 
@@ -188,8 +188,8 @@ if __name__ == "__main__":
     df = generate_data()
 
     # 检测突变点
-    # jumps = pandas_detect_jumps(df)
-    jumps = detect_jumps(df)
+    jumps = pandas_detect_jumps(df)
+    # jumps = detect_jumps(df)
 
     # 创建图表
     fig, ax = plt.subplots(figsize=(9, 5), dpi=100)
