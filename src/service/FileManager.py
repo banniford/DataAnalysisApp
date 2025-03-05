@@ -16,8 +16,8 @@ class FileManager:
         self.df = None
         self.main_ui.comboBox2_1.clear()
         self.main_ui.comboBox2_2.clear()
-        self.main_ui.comboBox2_3.clear()
-        self.main_ui.comboBox2_4.clear()
+        
+        
 
 
     def loadCSVFile(self):
@@ -54,5 +54,5 @@ class FileManager:
     def addComboBoxItems(self, items: list):
         self.main_ui.comboBox2_1.addCheckableItems(items)
         self.main_ui.comboBox2_2.addCheckableItems(items)
-        self.main_ui.comboBox2_3.addItems(items)
-        self.main_ui.comboBox2_4.addItems(items)
+        
+        

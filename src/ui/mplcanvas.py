@@ -6,7 +6,7 @@ from matplotlib import font_manager,rcParams
 import mplcursors  # 引入mplcursors库
 
 # 字体加载
-font_path = "../assets/font/simhei.ttf"
+font_path = "../assets/font/SourceHanSansSC-Bold.otf"
 font_manager.fontManager.addfont(font_path)
 prop = font_manager.FontProperties(fname=font_path)
 

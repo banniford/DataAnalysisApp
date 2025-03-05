@@ -1,6 +1,7 @@
 
 import warnings
 warnings.filterwarnings("ignore")
+from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from ui.Ui_DataAnalysis import Ui_MainWindow
 from service.FileManager import FileManager
@@ -27,6 +28,38 @@ class MainWindow(QMainWindow):
         self.main_ui.action_1.triggered.connect(self.file_manager.saveCSVFile)
 
         self.main_ui.checkBox_3.stateChanged.connect(self.changeDeltT)
+        self.main_ui.comboBox2_1.currentTextChanged.connect(self.comboBoxLeft)
+        self.main_ui.comboBox2_2.currentTextChanged.connect(self.comboBoxRight)
+
+    def comboBoxLeft(self):
+        items = self.main_ui.comboBox2_1.checkedItems()
+        if "全选" in items:
+            items.remove("全选")
+        self.main_ui.comboBox2_3.clear()
+        self.main_ui.comboBox2_3.addItems(items)
+        # 设置下拉框样式, 使其不显示下拉箭头
+        self.main_ui.comboBox2_3.setStyleSheet("QComboBox {combobox-popup: 0;}")
+        # 设置下拉框最大显示条目数
+        self.main_ui.comboBox2_3.setMaxVisibleItems(5)
+        # 设置下拉框滚动条显示策略
+        self.main_ui.comboBox2_3.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        
+        
+    
+    def comboBoxRight(self):
+        items = self.main_ui.comboBox2_2.checkedItems()
+        if "全选" in items:
+            items.remove("全选")
+        self.main_ui.comboBox2_4.clear()
+        self.main_ui.comboBox2_4.showPopup()
+        self.main_ui.comboBox2_4.addItems(items)
+        # 设置下拉框样式, 使其不显示下拉箭头
+        self.main_ui.comboBox2_4.setStyleSheet("QComboBox {combobox-popup: 0;}")
+        # 设置 下拉框最大显示条目数 
+        self.main_ui.comboBox2_4.setMaxVisibleItems(5)
+        # 设置下拉框滚动条显示策略
+        self.main_ui.comboBox2_4.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)   
+        
 
     def msg(self, msg:str):
         # 打印时间在前面，格式化输出

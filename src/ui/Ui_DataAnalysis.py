@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'd:\work\DataAnalysisApp\ui\DataAnalysis.ui'
+# Form implementation generated from reading ui file '/media/pjh/7TB1/IEOS/Dev/yun/DataAnalysisApp/ui/DataAnalysis.ui'
 #
 # Created by: PyQt6 UI code generator 6.4.2
 #
@@ -32,7 +32,7 @@ class Ui_MainWindow(object):
         font.setPointSize(14)
         MainWindow.setFont(font)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("d:\\work\\DataAnalysisApp\\ui\\../assets/image/faviceon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(QtGui.QPixmap("../assets/image/faviceon.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setAutoFillBackground(False)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
