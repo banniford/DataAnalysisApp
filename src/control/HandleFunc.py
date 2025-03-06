@@ -2,7 +2,7 @@
 import warnings
 warnings.filterwarnings("ignore")
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PyQt6.QtWidgets import QMainWindow
 from ui.Ui_DataAnalysis import Ui_MainWindow
 from service.FileManager import FileManager
 from service.DataAnalysis import DataAnalysis

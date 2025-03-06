@@ -194,6 +194,7 @@ if __name__ == "__main__":
     # 创建图表
     fig, ax = plt.subplots(figsize=(9, 5), dpi=100)
     # 绘制折线
+    print(df.index)
     line, = ax.plot(df.index, df['value'], color='gray', alpha=0.8, label='原始数据')
     # 绘制点位
     scatter = ax.scatter(df.index, df['value'], color='red', s=10, label='数据点')

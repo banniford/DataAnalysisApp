@@ -32,7 +32,7 @@ class ReferenceLineManager:
         
         # 检查是否点击了某条线
         if event.button == 1:  # 左键
-            for line in self.lines:
+            for line in self.t_lines:
                 if line.contains(event)[0]:
                     self.current_line = line
                     break
@@ -55,7 +55,7 @@ class ReferenceLineManager:
         if event.key == 'd' and self.current_line is not None:
             # 删除当前选中的参考线
             self.current_line.remove()
-            self.lines.remove(self.current_line)
+            self.t_lines.remove(self.current_line)
             self.current_line = None
             self.ax.figure.canvas.draw_idle()
         elif event.key == 'a':

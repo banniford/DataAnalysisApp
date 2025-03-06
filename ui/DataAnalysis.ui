@@ -6,13 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1028</width>
-    <height>1086</height>
+    <width>1029</width>
+    <height>1105</height>
    </rect>
   </property>
   <property name="palette">
    <palette>
     <active>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
@@ -24,6 +33,15 @@
      </colorrole>
     </active>
     <inactive>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
      <colorrole role="Window">
       <brush brushstyle="SolidPattern">
        <color alpha="255">
@@ -115,6 +133,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -141,6 +160,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -158,6 +178,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -184,6 +205,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -201,6 +223,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -261,6 +284,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -279,7 +303,7 @@
      <rect>
       <x>360</x>
       <y>110</y>
-      <width>71</width>
+      <width>61</width>
       <height>31</height>
      </rect>
     </property>
@@ -318,6 +342,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -336,7 +361,7 @@
      <rect>
       <x>540</x>
       <y>110</y>
-      <width>71</width>
+      <width>61</width>
       <height>31</height>
      </rect>
     </property>
@@ -406,6 +431,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -476,6 +502,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -489,7 +516,7 @@
      <enum>Qt::AutoText</enum>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+   <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -507,8 +534,11 @@
     <property name="decimals">
      <number>7</number>
     </property>
+    <property name="singleStep">
+     <double>0.001000000000000</double>
+    </property>
     <property name="value">
-     <double>2.000000000000000</double>
+     <double>0.500000000000000</double>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_3">
@@ -543,6 +573,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -560,6 +591,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -586,6 +618,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -612,11 +645,12 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
    </widget>
-   <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+   <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -633,6 +667,9 @@
     </property>
     <property name="decimals">
      <number>7</number>
+    </property>
+    <property name="singleStep">
+     <double>0.001000000000000</double>
     </property>
     <property name="value">
      <double>0.003000000000000</double>
@@ -651,6 +688,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -670,8 +708,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1028</width>
-     <height>22</height>
+     <width>1029</width>
+     <height>29</height>
     </rect>
    </property>
    <property name="font">
