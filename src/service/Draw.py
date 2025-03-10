@@ -16,6 +16,7 @@ class Draw:
         self.canvas = self.mpl_widget.canvas
         self.reference_line_manager = ReferenceLineManager(self.canvas.ax)
         self.line_manager = {}
+        self.scatter_manager = {}
         # 添加交互光标
         cursor = Cursor(self.canvas.ax, useblit=False, color='blue', linewidth=1, horizOn=False, vertOn=True) 
         # 添加滑块
@@ -57,12 +58,27 @@ class Draw:
         print("update_jumps")
         pass
 
-    def draw_scatter(self,x ,y ,color='red', linestyle='--', alpha=0.8, picker=5):
-        scatter= self.canvas.ax.scatter(x, y, color=color, linestyle=linestyle, alpha=alpha, picker=picker)
+    def draw_scatter(self, label, x ,y ,color='red', linestyle='--', alpha=0.8, picker=5):
+        if label in self.scatter_manager:
+            return 
+        scatter= self.canvas.ax.scatter(x, y, label = label,color=color, linestyle=linestyle, alpha=alpha, picker=picker)
         # 添加鼠标悬停显示数据点数值的功能
         mplcursors.cursor(scatter, hover=True).connect(
             "add", lambda sel: sel.annotation.set_text(f"({sel.target[0]:.0f}, {sel.target[1]:.6f})")
         )
+        # 更新图例
+        self.canvas.ax.legend()
+        # 添加到管理器
+        self.scatter_manager[label] = scatter
         self.canvas.draw_idle()
+
+    def clear_scatter(self, label):
+        scatter = self.scatter_manager.get(label)
+        if scatter:
+            scatter.remove()
+            self.scatter_manager.pop(label)
+            # 更新图例
+            self.canvas.ax.legend()
+            self.canvas.draw_idle()
     
     

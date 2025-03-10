@@ -79,7 +79,7 @@ class MyMplCanvas(FigureCanvas):
                     current_lw = line.get_linewidth()
                     new_lw = 3 if current_lw < 3 else 1.5
                     line.set_linewidth(new_lw)
-                    self.draw()
+                    self.draw_idle()
                     break
 
     def on_pick(self, event):

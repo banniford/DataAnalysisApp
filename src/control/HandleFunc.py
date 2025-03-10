@@ -20,21 +20,27 @@ class MainWindow(QMainWindow):
         self.draw = Draw(self)
         self.report_table = ReportTable(self)
         # 采集间隔
-        self.delt_T = 200
+        # self.delt_T = 200
         self.delt_T_set = self.main_ui.spinBox_0.value()
+        self.master_var = []
+        self.slave_var = []
 
 
         self.main_ui.action_0.triggered.connect(self.file_manager.loadCSVFile)
         self.main_ui.action_1.triggered.connect(self.file_manager.saveCSVFile)
 
         self.main_ui.checkBox_3.stateChanged.connect(self.changeDeltT)
-        self.main_ui.comboBox2_1.currentTextChanged.connect(self.comboBoxLeft)
-        self.main_ui.comboBox2_2.currentTextChanged.connect(self.comboBoxRight)
+        self.main_ui.comboBox2_1.currentTextChanged.connect(self.checkAbleComboBoxLeft)
+        self.main_ui.comboBox2_2.currentTextChanged.connect(self.checkAbleComboBoxRight)
+        self.main_ui.comboBox2_3.currentTextChanged.connect(self.comBoboxLeft)
+        self.main_ui.comboBox2_4.currentTextChanged.connect(self.comBoboxRight)
 
-    def comboBoxLeft(self):
+    def checkAbleComboBoxLeft(self):
         items = self.main_ui.comboBox2_1.checkedItems()
         if "全选" in items:
             items.remove("全选")
+        # 设置主变量
+        self.master_var = items
         self.main_ui.comboBox2_3.clear()
         self.main_ui.comboBox2_3.addItems(items)
         # 设置下拉框样式, 使其不显示下拉箭头
@@ -46,10 +52,12 @@ class MainWindow(QMainWindow):
         
         
     
-    def comboBoxRight(self):
+    def checkAbleComboBoxRight(self):
         items = self.main_ui.comboBox2_2.checkedItems()
         if "全选" in items:
             items.remove("全选")
+        # 设置从变量
+        self.slave_var = items
         self.main_ui.comboBox2_4.clear()
         self.main_ui.comboBox2_4.showPopup()
         self.main_ui.comboBox2_4.addItems(items)
@@ -60,6 +68,18 @@ class MainWindow(QMainWindow):
         # 设置下拉框滚动条显示策略
         self.main_ui.comboBox2_4.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)   
         
+    def comBoboxLeft(self):
+        # 绘制主变量散点图
+        if self.master_var == []:
+            return
+        
+        pass
+
+    def comBoboxRight(self):
+        # 绘制从变量
+        if self.slave_var == []:
+            return
+        pass
 
     def msg(self, msg:str):
         # 打印时间在前面，格式化输出

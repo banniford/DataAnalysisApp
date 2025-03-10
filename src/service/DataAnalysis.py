@@ -18,6 +18,14 @@ class DataAnalysis:
             table_header.remove('Time [s]')
         return table_header
     
+    def get_table_num(self):
+        # 获取表格行数
+        return len(self.df)
+    
+    def get_var_value(self, var_name):
+        # 获取变量值
+        return self.df[var_name].values
+    
     
     def detect_jumps(self, key , window, threshold):
         """优化后的突变点检测算法"""

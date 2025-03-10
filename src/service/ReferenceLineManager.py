@@ -1,5 +1,6 @@
+import matplotlib.pyplot as plt
 class ReferenceLineManager:
-    def __init__(self, ax):
+    def __init__(self, ax: plt.Axes):
         self.ax = ax
         self.t_lines = []
         self.ft_lines = []
