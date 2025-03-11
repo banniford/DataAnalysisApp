@@ -24,16 +24,14 @@ class MyMplCanvas(FigureCanvas):
         # 创建主坐标轴和右侧坐标轴
         self.ax_left = self.fig.add_subplot(111)
         self.ax_right = self.ax_left.twinx()
-        # 强制设置坐标轴层级（重要！）
-        # self.ax_left.set_zorder(3)  # 左侧坐标轴在上层
-        # self.ax_right.set_zorder(2)
-        # self.ax_left.patch.set_visible(False)  # 使左侧坐标轴背景透明
 
         # 生成示例数据
         self.x = [1, 2, 3, 4, 5]
-        self.y1 = [1, 4, 9, 16, 25]  # 左侧Y轴数据
-        self.y2 = [1, 2, 3, 4, 5]    # 右侧Y轴数据
-        
+        self.y1 = [1, 4, 9, 16, 25]  # 左侧Y1轴数据
+        self.y2 = [10, 9, 8, 6, 3]    # 左侧Y2轴数据
+        self.y3 = [1, 2, 3, 4, 5]    # 右侧Y3轴数据
+        self.y4 = [5, 15, 45, 16, 25]  # 右侧Y4轴数据
+
         # 在绘制曲线时添加zorder和picker参数
         self.line1, = self.ax_left.plot(
             self.x, self.y1, 
@@ -41,18 +39,21 @@ class MyMplCanvas(FigureCanvas):
             picker=True  # 扩大点击检测范围
         )
         self.line2, = self.ax_right.plot(
-            self.x, self.y2, 
+            self.x, self.y3, 
             'r-', label='y = x', 
             picker=True
         )
 
-
+        # **设置左侧Y轴按照 y2 范围调整**
+        self.ax_left.set_ylim(min(self.y2), max(self.y2))
+        # **设置右侧Y轴按照 y3 范围调整**
+        self.ax_right.set_ylim(min(self.y3), max(self.y3))
 
         # 设置坐标轴样式
         self.ax_left.set_xlabel('X轴')
         self.ax_left.set_ylabel('左侧Y轴（平方）', color='b')
         self.ax_right.set_ylabel('右侧Y轴（线性）', color='r')
-        
+
         # 设置刻度颜色匹配曲线
         self.ax_left.tick_params(axis='y', colors='b')
         self.ax_right.tick_params(axis='y', colors='r')
@@ -65,8 +66,7 @@ class MyMplCanvas(FigureCanvas):
             loc='upper left'
         )
 
-        # 绑定pick事件
-        # self.mpl_connect('pick_event', self.on_pick)
+        # 绑定点击事件
         self.mpl_connect('button_press_event', self.button_press_event)
 
     def button_press_event(self, event):

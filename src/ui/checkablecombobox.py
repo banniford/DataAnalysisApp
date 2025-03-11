@@ -55,6 +55,12 @@ class CheckableComboBox(QComboBox):
     def clear(self) -> None:
         super().clear()
         self.addCheckableItem('全选')
+
+    def remove_diff(self, text:list):
+        for i in text:
+            index = self.findText(i)
+            if index != -1:
+                self.removeItem(index)
  
     def select_all(self):
         for i in range(self.model().rowCount()):

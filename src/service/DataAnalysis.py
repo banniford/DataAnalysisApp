@@ -11,14 +11,14 @@ class DataAnalysis:
     def set_table_data(self, df):
         self.df = df
 
-    def get_table_header(self):
+    def get_table_header(self)->list:
         # 获取表头, 去除名为 Time [s] 的列
         table_header = self.df.columns.tolist()
         if 'Time [s]' in table_header:
             table_header.remove('Time [s]')
         return table_header
     
-    def get_table_num(self):
+    def get_table_num(self)->int:
         # 获取表格行数
         return len(self.df)
     
