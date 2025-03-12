@@ -1,16 +1,111 @@
-
+from PyQt6.QtWidgets import QAbstractItemView, QHeaderView, QAbstractScrollArea, QTableWidgetItem, QMenu, QApplication, QMessageBox
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QClipboard, QKeySequence
 
 class ReportTable:
     def __init__(self, main_window):
         self.main_window = main_window
         self.main_ui = main_window.main_ui
+        self.table = self.main_ui.tableWidget
+
+        # 设置表格大小调整为内容适应
+        self.table.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.table.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)  
+        self.table.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        # 设置表格不可编辑
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+
+        # 启用表格自适应列宽
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.table.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+
+        # 绑定右键菜单
+        self.table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.table.customContextMenuRequested.connect(self.show_context_menu)
+
+        # 绑定 Ctrl+C 复制快捷键
+        self.table.keyPressEvent = self.keyPressEvent
+
+    def show_context_menu(self, position):
+        """显示右键菜单"""
+        menu = QMenu(self.table)
+        copy_action = menu.addAction("复制")
+        copy_action.triggered.connect(self.copy_selection)
+        menu.exec(self.table.viewport().mapToGlobal(position))
+
+    def copy_selection(self):
+        """复制选中内容到剪贴板"""
+        try:
+            selected_ranges = self.table.selectedRanges()
+            if not selected_ranges:
+                return
+
+            copied_data = []
+            for selection in selected_ranges:
+                rows = []
+                for row in range(selection.topRow(), selection.bottomRow() + 1):
+                    columns = []
+                    for col in range(selection.leftColumn(), selection.rightColumn() + 1):
+                        item = self.table.item(row, col)
+                        columns.append(item.text() if item else "")
+                    rows.append("\t".join(columns))
+                copied_data.append("\n".join(rows))
+
+            clipboard = QApplication.clipboard()
+            clipboard.setText("\n".join(copied_data))
+
+        except Exception as e:
+            QMessageBox.critical(None, "复制失败", f"错误: {str(e)}")
+
+    def keyPressEvent(self, event):
+        """监听 Ctrl+C 复制"""
+        try:
+            if event.matches(QKeySequence.StandardKey.Copy):
+                self.copy_selection()
+            else:
+                super(QAbstractItemView, self.table).keyPressEvent(event)  # 保持原有按键功能
+        except Exception as e:
+            QMessageBox.critical(None, "快捷键错误", f"错误: {str(e)}")
+
+    def add_column(self, column_name: str, data: list):
+        """添加一列数据"""
+        col_index = self.table.columnCount()  # 获取当前列数
+        self.table.insertColumn(col_index)  # 插入新列
+        self.table.setHorizontalHeaderLabels(self.get_column_headers() + [column_name])
+
+        # 填充数据
+        for row_index, value in enumerate(data):
+            if row_index >= self.table.rowCount():
+                self.table.insertRow(row_index)  # 如果数据超出行数，新增行
+            self.table.setItem(row_index, col_index, QTableWidgetItem(str(value)))
+
+    def add_row(self, row_data: list):
+        """添加一行数据"""
+        row_index = self.table.rowCount()  # 获取当前行数
+        self.table.insertRow(row_index)  # 插入新行
+
+        # 填充数据
+        for col_index, value in enumerate(row_data):
+            if col_index >= self.table.columnCount():
+                self.table.insertColumn(col_index)  # 如果数据超出列数，新增列
+            self.table.setItem(row_index, col_index, QTableWidgetItem(str(value)))
+
+    def delete_column(self, column_name):
+        """删除指定列"""
+        col_index = self.get_column_headers().index(column_name)  # 获取列索引
+        self.table.removeColumn(col_index)  # 删除列
         
 
+    def delete_row(self, row_index):
+        """删除指定行"""
+        if 0 <= row_index < self.table.rowCount():
+            self.table.removeRow(row_index)  # 删除行
+        
+    def get_column_headers(self):
+        """获取表格当前列头"""
+        return [self.table.horizontalHeaderItem(i).text() for i in range(self.table.columnCount()) if self.table.horizontalHeaderItem(i)]
 
-    def init_table(self):
-        pass
-
-    def update_table(self):
-        pass
-    
-    
+    def clear_all_rows(self):
+        """清空所有行"""
+        self.table.setRowCount(0)

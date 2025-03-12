@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1029</width>
-    <height>1105</height>
+    <width>1700</width>
+    <height>930</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1700</width>
+    <height>930</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1700</width>
+    <height>930</height>
+   </size>
   </property>
   <property name="palette">
    <palette>
@@ -97,7 +109,7 @@
       <x>10</x>
       <y>210</y>
       <width>1000</width>
-      <height>500</height>
+      <height>641</height>
      </rect>
     </property>
    </widget>
@@ -390,10 +402,10 @@
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>720</y>
-      <width>1001</width>
-      <height>311</height>
+      <x>1020</x>
+      <y>10</y>
+      <width>661</width>
+      <height>841</height>
      </rect>
     </property>
    </widget>
@@ -708,7 +720,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1029</width>
+     <width>1700</width>
      <height>29</height>
     </rect>
    </property>
