@@ -48,3 +48,18 @@ class DataAnalysis:
         return clean_jumps
     
     
+    def pandas_detect_jumps(self, key , window, threshold):
+        """检测突变点位置"""
+        # 计算滑动窗口内的标准差
+        rolling_std = self.df[key].rolling(window).std()
+
+        # 检测突变点（标准差超过阈值）
+        jumps = self.df.index[rolling_std > threshold].tolist()
+
+        # 去除连续点，只保留突变起始点
+        clean_jumps = [jumps[0]]
+        for i in range(1, len(jumps)):
+            if jumps[i] - jumps[i - 1] > window:
+                clean_jumps.append(jumps[i])
+
+        return clean_jumps
