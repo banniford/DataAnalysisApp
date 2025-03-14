@@ -117,8 +117,10 @@ class MainWindow(QMainWindow):
                 self.draw.draw_scatter(var_key, range(len(v)), v)
                 # 检测突变点
                 jumps = self.data_analysis.pandas_detect_jumps(var_key, 50, self.draw.slider.val)
+                self.draw.create_reference_line_manager(var_key, range(len(v)),v,
+                                                        self.main_ui.spinBox_1.value(),
+                                                        self.main_ui.spinBox_2.value())
                 self.draw.draw_reference_line(var_key,jumps)
-                
         else:
             diff = list(set(self.master_var)-set(master_var))
             # 清除从变量列表, 并添加新的从变量

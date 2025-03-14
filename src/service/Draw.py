@@ -1,3 +1,4 @@
+# Draw.py
 from ui.mplcanvas import MplWidget
 import mplcursors  # 引入mplcursors库
 from matplotlib.widgets import Slider
@@ -15,9 +16,7 @@ class Draw:
         self.mpl_widget = self.main_window.findChild(MplWidget, "mplWidget")  # "mplWidget" 是你在 Qt Designer 中设置的 objectName
         # 访问 canvas 属性并绘图
         self.canvas = self.mpl_widget.canvas
-        self.reference_line_manager = {}
-        self.line_manager = {}
-        self.scatter_manager = {}
+        self.reset()
         # 添加滑块
         self.slider = self.add_threshold_slider(self.main_ui.doubleSpinBox_2.value(),self.main_ui.doubleSpinBox_3.value()) 
         # 绑定事件
@@ -25,6 +24,16 @@ class Draw:
         # 更新阈值
         self.main_ui.doubleSpinBox_2.valueChanged.connect(self.update_slider_threshold)
         self.main_ui.doubleSpinBox_3.valueChanged.connect(self.update_slider_threshold)
+
+    def reset(self):
+        # 绘制新的数据
+        self.canvas.ax_left.cla()  # 清除当前轴上的所有内容
+        # 重新计算轴的限制并自动调整视图
+        self.canvas.ax_left.relim()  # 重新计算数据的限制
+        self.canvas.ax_left.autoscale_view()  # 自动调整视图的范围
+        self.reference_line_manager = {}
+        self.line_manager = {}
+        self.scatter_manager = {}
         # 添加表头
         self.canvas.ax_left.set_title("数据分析(点击拖动参考线，按D删除，按C清空，按A添加)")
         self.canvas.ax_left.set_xlabel("数据点位/ΔT(ms)")
@@ -40,10 +49,12 @@ class Draw:
             self.line_manager[name] = LineManager(self.canvas.ax_left)
         return self.line_manager[name]
     
-    def create_reference_line_manager(self, name)->ReferenceLineManager:
+    def create_reference_line_manager(self, name,xpos_list,y_value,left_Zone,right_Zone)->ReferenceLineManager:
         """创建参考线管理器"""
         if name not in self.reference_line_manager:
-            self.reference_line_manager[name] = ReferenceLineManager(self.canvas.ax_left)
+            self.reference_line_manager[name] = ReferenceLineManager(self.canvas,xpos_list,y_value,left_Zone,right_Zone)
+            self.main_ui.spinBox_1.valueChanged.connect(lambda val: self.reference_line_manager[name].update_left_zone(val))
+            self.main_ui.spinBox_2.valueChanged.connect(lambda val: self.reference_line_manager[name].update_right_zone(val))
         return self.reference_line_manager[name]
     
     def add_threshold_slider(self, initial_threshold,max_threshold):
@@ -60,15 +71,16 @@ class Draw:
         initial_threshold = self.main_ui.doubleSpinBox_2.value()
         max_threshold = self.main_ui.doubleSpinBox_3.value()
         self.slider = self.add_threshold_slider(initial_threshold,max_threshold)
-        self.slider.on_changed(self.update_jumps)
+        self.slider.on_changed(lambda val: self.update_jumps())
         
     def draw_reference_line(self, name, jumps):
         """绘制参考线"""
         # 创建参考线管理器
-        reference_line_manager = self.create_reference_line_manager(name)
+        reference_line_manager = self.reference_line_manager.get(name)
+        if not reference_line_manager:
+            return
         # 绘制参考线
-        for pos in jumps:
-            reference_line_manager.add_line('t',pos)
+        reference_line_manager.set_jumps(jumps)
 
     def clear_reference_line(self, name):
         """清除参考线"""
@@ -85,7 +97,6 @@ class Draw:
             jumps = self.main_window.data_analysis.detect_jumps(name, 50, self.slider.val)
             self.draw_reference_line(name,jumps)
         self.canvas.draw_idle()
-        pass
 
     def draw_scatter(self, label, x ,y ,color='gray', linestyle='--', alpha=0.5, picker=5):
         if label in self.scatter_manager:

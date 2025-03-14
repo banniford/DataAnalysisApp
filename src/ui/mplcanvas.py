@@ -4,7 +4,7 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
 from matplotlib import font_manager,rcParams
-import mplcursors  # 引入mplcursors库
+from PyQt6.QtCore import Qt
 
 # 字体加载
 font_path = "../assets/font/SourceHanSansSC-Bold.otf"
@@ -21,6 +21,8 @@ class MplCanvas(FigureCanvas):
         super().__init__(self.fig)
         self.setParent(parent)
         self.ax_right = self.ax_left.twinx()
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setFocus()
 
 class MplWidget(QWidget):
     def __init__(self, parent=None):

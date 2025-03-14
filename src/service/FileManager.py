@@ -15,13 +15,14 @@ class FileManager:
         self.df = None
         self.main_ui.comboBox2_1.clear()
         self.main_ui.comboBox2_2.clear()
+        self.main_window.draw.reset()
         
 
     def loadCSVFile(self):
+        self.clear()
         self.file_path = QFileDialog.getOpenFileName(self.main_window, '选择CSV文件', '', 'CSV files(*.csv)')
         if not self.file_path[0]:  # 用户取消
             self.main_window.msg("未选择 csv 文件")
-            self.clear()
             return
         # 使用pandas读取csv文件
         try:
