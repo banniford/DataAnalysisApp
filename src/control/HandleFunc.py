@@ -115,6 +115,10 @@ class MainWindow(QMainWindow):
             for var_key in self.master_var:
                 v = self.data_analysis.get_var_value(var_key)
                 self.draw.draw_scatter(var_key, range(len(v)), v)
+                # 检测突变点
+                jumps = self.data_analysis.pandas_detect_jumps(var_key, 50, self.draw.slider.val)
+                self.draw.draw_reference_line(var_key,jumps)
+                
         else:
             diff = list(set(self.master_var)-set(master_var))
             # 清除从变量列表, 并添加新的从变量
@@ -122,6 +126,7 @@ class MainWindow(QMainWindow):
             self.master_var = master_var
             for var_key in diff:
                 self.draw.clear_scatter(var_key)
+                self.draw.clear_reference_line(var_key)
             
         
     def update_slave(self, slave_var:list):

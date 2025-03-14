@@ -74,3 +74,15 @@ class ReferenceLineManager:
                 line.remove()
             self.bt_lines.clear()
             self.ax.figure.canvas.draw_idle()
+
+    def clear_lines(self):
+        for line in self.t_lines:
+            line.remove()
+        self.t_lines.clear()
+        for line in self.ft_lines:
+            line.remove()
+        self.ft_lines.clear()
+        for line in self.bt_lines:
+            line.remove()
+        self.bt_lines.clear()
+        self.ax.figure.canvas.draw_idle()

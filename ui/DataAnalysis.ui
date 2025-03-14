@@ -550,7 +550,7 @@
      <double>0.001000000000000</double>
     </property>
     <property name="value">
-     <double>0.500000000000000</double>
+     <double>0.100000000000000</double>
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_3">
@@ -684,7 +684,7 @@
      <double>0.001000000000000</double>
     </property>
     <property name="value">
-     <double>0.003000000000000</double>
+     <double>0.001000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_9">

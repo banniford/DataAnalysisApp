@@ -39,6 +39,9 @@ class DataAnalysis:
         # 检测突变点（标准差超过阈值）
         jumps = np.where(stds > threshold)[0]
 
+        if len(jumps) == 0:
+            return []
+        
         # 去除连续点，只保留突变起始点
         clean_jumps = [jumps[0]]
         for i in range(1, len(jumps)):
@@ -56,6 +59,9 @@ class DataAnalysis:
         # 检测突变点（标准差超过阈值）
         jumps = self.df.index[rolling_std > threshold].tolist()
 
+        if len(jumps) == 0:
+            return []
+        
         # 去除连续点，只保留突变起始点
         clean_jumps = [jumps[0]]
         for i in range(1, len(jumps)):
