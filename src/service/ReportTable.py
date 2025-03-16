@@ -1,12 +1,16 @@
 from PyQt6.QtWidgets import QAbstractItemView, QHeaderView, QAbstractScrollArea, QTableWidgetItem, QMenu, QApplication, QMessageBox
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QClipboard, QKeySequence
+from PyQt6.QtGui import QKeySequence
+from service.DataAnalysis import DataAnalysis
 
 class ReportTable:
-    def __init__(self, main_window):
+    def __init__(self, main_window,data_analysis:DataAnalysis):
         self.main_window = main_window
         self.main_ui = main_window.main_ui
         self.table = self.main_ui.tableWidget
+        self.data_analysis = data_analysis
+        self.table_data = {}
+
 
         # 设置表格大小调整为内容适应
         self.table.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
@@ -26,6 +30,47 @@ class ReportTable:
 
         # 绑定 Ctrl+C 复制快捷键
         self.table.keyPressEvent = self.keyPressEvent
+
+
+    def update_table(self, name):
+        """更新表格数据"""
+        if name not in self.table_data:
+            self.table_data[name] = {"avg": [], "max_min": []}
+        
+        self.table_data[name]["avg"] = self.data_analysis.data_avg[name]
+        self.table_data[name]["max_min"] = self.data_analysis.data_max_min[name]
+        self.show_data(name)
+
+    def show_data(self, name):
+        """显示数据"""
+        # 检查当前name是否等于 comboBox2_3 的值
+        if self.main_ui.comboBox2_3.currentText() != name and self.data_analysis.stable_interval.get(name) is None:
+            return
+        
+        
+        self.clear_all_columns()
+        # 添加第一列为稳定阶段的数据
+        if not self.data_analysis.stable_interval[name]:
+            self.add_column("稳定阶段", [f"0 - {self.data_analysis.get_table_num()-1}"])
+            self.data_analysis.get_table_columns()
+        else:
+            self.add_column("稳定阶段", [f"{interval[0]} - {interval[1]}" for interval in self.data_analysis.stable_interval[name]])
+        # 添加第二列为原始表格中 Time [s] 列的数据
+        if not self.data_analysis.stable_interval[name]:
+            self.add_column("Time [s]", [f"{self.data_analysis.get_var_value('Time [s]')[0]} - {self.data_analysis.get_var_value('Time [s]')[self.data_analysis.get_table_num()-1]}"])
+        else:
+            self.add_column("Time [s]", [f"{self.data_analysis.get_var_value('Time [s]')[interval[0]]} - {self.data_analysis.get_var_value('Time [s]')[interval[1]]}"  for interval in self.data_analysis.stable_interval[name]])
+        # 添加第三列为平均值
+        self.add_column("平均值", self.table_data[name]["avg"])
+        # 添加第四列为最大值索引
+        self.add_column("最大值索引", [f"{max_min[1]}" for max_min in self.table_data[name]['max_min']])
+        # 添加第五列为最大值
+        self.add_column("最大值", [f"{max_min[0]}" for max_min in self.table_data[name]['max_min']])
+        # 添加第六列为最小值索引
+        self.add_column("最小值索引", [f"{max_min[3]}" for max_min in self.table_data[name]['max_min']])
+        # 添加第七列为最小值
+        self.add_column("最小值", [f"{max_min[2]}" for max_min in self.table_data[name]['max_min']])
+
 
     def show_context_menu(self, position):
         """显示右键菜单"""
@@ -109,3 +154,7 @@ class ReportTable:
     def clear_all_rows(self):
         """清空所有行"""
         self.table.setRowCount(0)
+
+    def clear_all_columns(self):
+        """清空所有列"""
+        self.table.setColumnCount(0)

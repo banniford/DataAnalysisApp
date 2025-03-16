@@ -1,3 +1,4 @@
+# 用于数据分析的类 DataAnalysis.py
 import pandas as pd
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
@@ -7,7 +8,26 @@ class DataAnalysis:
         self.main_window = main_window
         self.main_ui = main_window.main_ui
         self.df = None
+        self._data_avg = {}
+        self._data_max_min = {}
+        self._stable_interval = {}
     
+    @property
+    def data_avg(self):
+        return self._data_avg
+
+    @property
+    def data_max_min(self):
+        return self._data_max_min
+    
+    @property
+    def stable_interval(self):
+        return self._stable_interval
+    
+    def set_stable_interval(self, name, stable_interval):
+        self._stable_interval[name] = stable_interval
+        return self._stable_interval[name]
+
     def set_table_data(self, df):
         self.df = df
 
@@ -22,11 +42,40 @@ class DataAnalysis:
         # 获取表格行数
         return len(self.df)
     
+    def get_table_columns(self)->int:
+        # 获取表格列数
+        return len(self.df.columns)
+    
     def get_var_value(self, var_name):
         # 获取变量值
         return self.df[var_name].values
     
+    def cal_avg(self, var_name):
+        # 计算平均值
+        if not self.stable_interval[var_name]:
+            self.data_avg[var_name] = [self.df[var_name].mean()]
+            return
+        
+        self.data_avg[var_name] = []
+        for interval in self.stable_interval[var_name]:
+            avg = self.df[var_name][interval[0]:interval[1]].mean()
+            self.data_avg[var_name].append(avg)
     
+    def cal_max_min(self, var_name):
+        # 计算最大最小值以及对应的索引
+        if not self.stable_interval[var_name]:
+            self.data_max_min[var_name] = [[self.df[var_name].max(), self.df[var_name].idxmax() ,self.df[var_name].min(),self.df[var_name].idxmin() ]]
+            return
+        
+        self.data_max_min[var_name] = []
+        for interval in self.stable_interval[var_name]:
+            max_value = self.df[var_name][interval[0]:interval[1]].max()
+            max_value_index = self.df[var_name][interval[0]:interval[1]].idxmax()
+            min_value = self.df[var_name][interval[0]:interval[1]].min()
+            min_value_index = self.df[var_name][interval[0]:interval[1]].idxmin()
+            self.data_max_min[var_name].append((max_value,max_value_index, min_value,min_value_index))
+        
+        
     def detect_jumps(self, key , window, threshold):
         """优化后的突变点检测算法"""
         # 使用numpy的滑动窗口函数

@@ -4,14 +4,36 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton
 
 class LineManager:
-    def __init__(self, ax):
+    def __init__(self,ax, y_value):
         self.ax = ax
+        self.y_value = y_value
         self.lines = []  # 存储所有折线对象
+        self._stable_interval = []  # 稳定区间
+
+
+    @property
+    def stable_interval(self):
+        return self._stable_interval
+    
+    @stable_interval.setter
+    def stable_interval(self, value):
+        # 设置稳定区间
+        self._stable_interval = value
+        # 清除所有折线
+        self.clear_lines()
+        # 重新绘制稳定区间
+        if self._stable_interval==[]:
+            self.add_line(range(len(self.y_value)), self.y_value, color='red',alpha=0.5)
+            return
+        for i in self._stable_interval:
+            self.add_line(range(i[0],i[1]), self.y_value[i[0]:i[1]], color='red',alpha=0.5)
+
+    
 
     def add_line(self, x, y, **kwargs):
         """添加一条折线"""
-        if 'label' not in kwargs:  # 如果没有设置标签，则自动生成一个
-            kwargs['label'] = f"Line {len(self.lines) + 1}"
+        # if 'label' not in kwargs:  # 如果没有设置标签，则自动生成一个
+        #     kwargs['label'] = f"Line {len(self.lines) + 1}"
         line, = self.ax.plot(x, y, **kwargs)
         self.lines.append(line)
         self.ax.figure.canvas.draw_idle()

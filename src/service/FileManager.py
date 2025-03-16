@@ -1,3 +1,4 @@
+# Filename: FileManager.py
 from PyQt6.QtWidgets import QFileDialog
 import os
 import pandas as pd
@@ -26,9 +27,10 @@ class FileManager:
             return
         # 使用pandas读取csv文件
         try:
-            self.df = pd.read_csv(self.file_path[0])
-            self.main_window.data_analysis.set_table_data(self.df)
-            table_header = self.main_window.data_analysis.get_table_header()
+            self.df = pd.read_csv(self.file_path[0], skip_blank_lines=True)
+            self.df = self.df.dropna(axis=0, how='all')  # 删除全部为 NaN 的行
+            self.main_window.draw.data_analysis.set_table_data(self.df)
+            table_header = self.main_window.draw.data_analysis.get_table_header()
             self.addComboBoxItems(table_header)
             self.main_window.msg(f"文件 {self.file_path[0]} 加载成功")
         except Exception as e:

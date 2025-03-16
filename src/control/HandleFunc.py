@@ -5,9 +5,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow
 from ui.Ui_DataAnalysis import Ui_MainWindow
 from service.FileManager import FileManager
-from service.DataAnalysis import DataAnalysis
 from service.Draw import Draw
-from service.ReportTable import ReportTable
+
 from datetime import datetime
 
 class MainWindow(QMainWindow):
@@ -15,10 +14,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.main_ui = Ui_MainWindow()
         self.main_ui.setupUi(self)
-        self.data_analysis = DataAnalysis(self)
         self.file_manager = FileManager(self)
         self.draw = Draw(self)
-        self.report_table = ReportTable(self)
         # 采集间隔
         # self.delt_T = 200
         self.delt_T_set = self.main_ui.spinBox_0.value()
@@ -91,16 +88,14 @@ class MainWindow(QMainWindow):
         # 绘制主变量散点图
         if self.main_ui.comboBox2_3.currentText() == "":
             return
-        v = self.data_analysis.get_var_value(self.main_ui.comboBox2_3.currentText())
-        self.draw.update_left_ylim(v)
+        self.draw.update_left_ylim()
         
 
     def update_comBobox_right_ylim(self):
         # 绘制从变量
         if self.main_ui.comboBox2_4.currentText() == "":
             return
-        v = self.data_analysis.get_var_value(self.main_ui.comboBox2_4.currentText())
-        self.draw.update_right_ylim(v)
+        self.draw.update_right_ylim()
 
     def update_master(self, master_var:list):
         '''
@@ -113,14 +108,7 @@ class MainWindow(QMainWindow):
             self.master_var = master_var
             # 绘制主变量散点图
             for var_key in self.master_var:
-                v = self.data_analysis.get_var_value(var_key)
-                self.draw.draw_scatter(var_key, range(len(v)), v)
-                # 检测突变点
-                jumps = self.data_analysis.pandas_detect_jumps(var_key, 50, self.draw.slider.val)
-                self.draw.create_reference_line_manager(var_key, range(len(v)),v,
-                                                        self.main_ui.spinBox_1.value(),
-                                                        self.main_ui.spinBox_2.value())
-                self.draw.draw_reference_line(var_key,jumps)
+                self.draw.draw_master(var_key)
         else:
             diff = list(set(self.master_var)-set(master_var))
             # 清除从变量列表, 并添加新的从变量
@@ -142,8 +130,7 @@ class MainWindow(QMainWindow):
             self.slave_var = slave_var
             # 绘制从变量散点图
             for var_key in self.slave_var:
-                v = self.data_analysis.get_var_value(var_key)
-                self.draw.draw_scatter(var_key, range(len(v)), v)
+                self.draw.draw_slave(var_key)
         else:
             diff = list(set(self.slave_var)-set(slave_var))
             # 清除主变量列表, 并添加新的主变量
@@ -151,7 +138,6 @@ class MainWindow(QMainWindow):
             self.slave_var = slave_var
             for var_key in diff:
                 self.draw.clear_scatter(var_key)
-        
 
     def msg(self, msg:str):
         # 打印时间在前面，格式化输出
