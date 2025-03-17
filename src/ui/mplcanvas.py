@@ -5,6 +5,7 @@ from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as Navigation
 import matplotlib.pyplot as plt
 from matplotlib import font_manager,rcParams
 from PyQt6.QtCore import Qt
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 # 字体加载
 font_path = "../assets/font/SourceHanSansSC-Bold.otf"
@@ -23,6 +24,17 @@ class MplCanvas(FigureCanvas):
         self.ax_right = self.ax_left.twinx()
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setFocus()
+        # 设置性能优化参数
+        self._set_performance_options()
+
+    def _set_performance_options(self):
+        """设置Matplotlib性能优化参数"""
+        plt.rcParams['path.simplify'] = True        # 启用路径简化
+        plt.rcParams['path.simplify_threshold'] = 0.1  # 简化阈值
+        plt.rcParams['agg.path.chunksize'] = 10000  # 大块数据处理
+        plt.rcParams['figure.facecolor'] = 'white'  # 禁用透明背景
+        plt.rcParams['axes.facecolor'] = 'white'    # 禁用透明背景
+        self.figure.set_tight_layout(True)           # 减少布局计算
 
 class MplWidget(QWidget):
     def __init__(self, parent=None):
