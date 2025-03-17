@@ -102,14 +102,17 @@ class Draw:
     
     def update_jumps(self):
         """根据新阈值更新突变点和参考线"""
-        for name, reference_line_manager in self.reference_line_manager.items():
-            # 删除所有现有参考线
-            reference_line_manager.clear_lines()
-            # 重新检测突变点
-            jumps = self.data_analysis.pandas_detect_jumps(name,
-                                                    self.main_ui.spinBox_3.value(), 
-                                                    self.slider.val)
-            self.draw_reference_line(name,jumps)
+        name = self.main_ui.comboBox2_3.currentText()
+        reference_line_manager = self.reference_line_manager.get(name)
+        if not reference_line_manager:
+            return 
+        # 删除所有现有参考线
+        reference_line_manager.clear_lines()
+        # 重新检测突变点
+        jumps = self.data_analysis.pandas_detect_jumps(name,
+                                                self.main_ui.spinBox_3.value(), 
+                                                self.slider.val)
+        self.draw_reference_line(name,jumps)
         self.canvas.draw_idle()
 
     def update_lines_table(self, name, stable_interval):
@@ -129,6 +132,13 @@ class Draw:
         self.data_analysis.cal_max_min(name)
         # 更新表格
         self.report_table.update_table(name)
+
+    def clear_lines_table(self, name):
+        """清除折线_表格"""
+        line_manager = self.line_manager.get(name)
+        if line_manager:
+            line_manager.clear_lines()
+        self.report_table.clear_all_rows()
 
     def draw_master(self, master_var):
         """绘制主变量"""
@@ -158,13 +168,24 @@ class Draw:
         self.canvas.ax_right.autoscale_view()
 
 
-    def _scatter(self, label, x ,y ,color='gray', linestyle='--', alpha=0.5, picker=5):
+    def _scatter(self, label, x ,y ,color='gray', linestyle='--',linewidth=1, alpha=0.3, picker=5):
         if label in self.scatter_manager:
             return 
-        scatter= self.canvas.ax_left.scatter(x, y, label = label,color=color, linestyle=linestyle, alpha=alpha, picker=picker)
+        scatter= self.canvas.ax_left.scatter(x, 
+                                             y, 
+                                             label = label,
+                                             color=color, linestyle=linestyle, 
+                                             linewidth=linewidth,
+                                             alpha=alpha, 
+                                             picker=picker,
+                                             edgecolors='none',  # 关闭边缘
+                                             rasterized=True     # 启用栅格化
+                                             )
         # 添加鼠标悬停显示数据点数值的功能
         mplcursors.cursor(scatter, hover=True).connect(
-            "add", lambda sel: sel.annotation.set_text(f"({sel.target[0]:.0f}, {sel.target[1]:.6f})")
+            "add", lambda sel: sel.annotation.set_text(
+                f"({int(sel.target[0])}, {sel.target[1]:.2f})"
+            )
         )
         # 更新图例
         self.canvas.ax_left.legend()

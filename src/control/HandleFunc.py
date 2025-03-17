@@ -117,6 +117,8 @@ class MainWindow(QMainWindow):
             for var_key in diff:
                 self.draw.clear_scatter(var_key)
                 self.draw.clear_reference_line(var_key)
+                self.draw.clear_lines_table(var_key)
+                self.draw.clear_reference_line(var_key)
             
         
     def update_slave(self, slave_var:list):
