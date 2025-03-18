@@ -55,11 +55,6 @@ class ReportTable:
             self.data_analysis.get_table_columns()
         else:
             self.add_column("稳定阶段", [f"{interval[0]} - {interval[1]}" for interval in self.data_analysis.stable_interval[name]])
-        # 添加第二列为原始表格中 Time [s] 列的数据
-        if not self.data_analysis.stable_interval[name]:
-            self.add_column("Time [s]", [f"{self.data_analysis.get_var_value('Time [s]')[0]} - {self.data_analysis.get_var_value('Time [s]')[self.data_analysis.get_table_num()-1]}"])
-        else:
-            self.add_column("Time [s]", [f"{self.data_analysis.get_var_value('Time [s]')[interval[0]]} - {self.data_analysis.get_var_value('Time [s]')[interval[1]]}"  for interval in self.data_analysis.stable_interval[name]])
         # 添加第三列为平均值
         self.add_column("平均值", self.table_data[name]["avg"])
         # 添加第四列为最大值索引

@@ -32,10 +32,8 @@ class DataAnalysis:
         self.df = df
 
     def get_table_header(self)->list:
-        # 获取表头, 去除名为 Time [s] 的列
+        # 获取表头
         table_header = self.df.columns.tolist()
-        if 'Time [s]' in table_header:
-            table_header.remove('Time [s]')
         return table_header
     
     def get_table_num(self)->int:
@@ -66,9 +64,11 @@ class DataAnalysis:
         if not self.stable_interval[var_name]:
             self.data_max_min[var_name] = [[self.df[var_name].max(), self.df[var_name].idxmax() ,self.df[var_name].min(),self.df[var_name].idxmin() ]]
             return
-        
+        print(len(self.df[var_name]))
         self.data_max_min[var_name] = []
+        print(self.stable_interval[var_name])
         for interval in self.stable_interval[var_name]:
+            print(interval)
             max_value = self.df[var_name][interval[0]:interval[1]].max()
             max_value_index = self.df[var_name][interval[0]:interval[1]].idxmax()
             min_value = self.df[var_name][interval[0]:interval[1]].min()

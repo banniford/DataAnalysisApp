@@ -94,7 +94,7 @@ class ReferenceLineManager:
         # 确保第一个突变点不会导致前死区小于0
         first_jump = jumps[0]
         if first_jump - self.left_Zone < 0:
-            first_jump = self.left_Zone  # 确保前死区不会小于0
+            first_jump = self.left_Zone + 1  # 确保前死区不会小于0
 
         # 确保第一个突变点加后死区不会越界
         if first_jump + self.right_Zone >= len(self.y_value):
