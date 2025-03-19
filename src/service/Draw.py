@@ -8,6 +8,7 @@ from service.LineManager import LineManager
 from matplotlib.ticker import FuncFormatter
 from service.ReportTable import ReportTable
 from service.DataAnalysis import DataAnalysis
+import copy
 
 class Draw:
     def __init__(self, main_window: QMainWindow):
@@ -47,12 +48,15 @@ class Draw:
         self.canvas.ax_left.set_zorder(1)
         # Matplotlib 自动计算比较合适的边距和间隔。
         self.canvas.fig.tight_layout()
+        # 清空表格
+        self.report_table.clear_all_rows()
         
-    def create_line_manager(self, name, y_value)->LineManager:
+    def create_line_manager(self, name, y_value,color)->LineManager:
         """创建折线管理器"""
         if name not in self.line_manager:
             self.line_manager[name] = LineManager(self.canvas.ax_left,
-                                                    y_value)
+                                                    y_value,
+                                                    color)
         return self.line_manager[name]
     
     def create_reference_line_manager(self, name,xpos_list,y_value,left_Zone,right_Zone)->ReferenceLineManager:
@@ -115,30 +119,45 @@ class Draw:
         self.draw_reference_line(name,jumps)
         self.canvas.draw_idle()
 
-    def update_lines_table(self, name, stable_interval):
+    def update_lines_table(self,stable_interval):
         """更新折线_表格
             计算平均值和最大最小值
         """
         # 创建折线管理器
-        v = self.data_analysis.get_var_value(name)
-        line_manager = self.create_line_manager(name,v)
+        v = self.data_analysis.get_var_value(self.main_ui.comboBox2_3.currentText())
+        line_manager = self.create_line_manager(self.main_ui.comboBox2_3.currentText(),
+                                                v,
+                                                "red")
         # 更新稳定区间
         line_manager.stable_interval = stable_interval
+        
+        for var in self.main_window.slave_var:
+            v = self.data_analysis.get_var_value(var)
+            line_manager = self.create_line_manager(var,
+                                                    v,
+                                                    "blue")
+            line_manager.stable_interval = stable_interval
+        
+        
         # 设置稳定区间
-        self.data_analysis.set_stable_interval(name, stable_interval)
-        # 计算平均值
-        self.data_analysis.cal_avg(name)
-        # 计算最大最小值
-        self.data_analysis.cal_max_min(name)
-        # 更新表格
-        self.report_table.update_table(name)
+        self.data_analysis.set_stable_interval(self.main_ui.comboBox2_3.currentText(), stable_interval)
+        cal_list = copy.deepcopy(self.main_window.slave_var)
+        cal_list.insert(0,self.main_ui.comboBox2_3.currentText())
+        # 计算所有主/从变量平均值
+        for var in cal_list:
+            self.data_analysis.cal_avg(cal_list[0],var)
+        # 计算所有主/从变量最大最小值
+        for var in cal_list:
+            self.data_analysis.cal_max_min(cal_list[0],var)
+        # 更新表格为当前主变量和从变量
+        self.report_table.update_table(cal_list)
 
-    def clear_lines_table(self, name):
+    def clear_lines_table(self, master_var):
         """清除折线_表格"""
-        line_manager = self.line_manager.get(name)
+        line_manager = self.line_manager.get(master_var)
         if line_manager:
             line_manager.clear_lines()
-        self.report_table.clear_all_rows(name)
+        self.report_table.clear_all_rows()
 
     def draw_master(self, master_var):
         """绘制主变量"""
@@ -168,9 +187,14 @@ class Draw:
         """绘制从变量"""
         v = self.data_analysis.get_var_value(slave_var)
         self._scatter(slave_var, range(len(v)), v)
+        if self.main_ui.comboBox2_3.currentText() != "":
+            self.update_lines_table(self.data_analysis.stable_interval[self.main_ui.comboBox2_3.currentText()])
         # 更新ax范围自动适配
         self.canvas.ax_right.relim()
         self.canvas.ax_right.autoscale_view()
+
+    def clear_slave(self, slave_var):
+        self.clear_scatter(slave_var)
 
 
     def _scatter(self, label, x ,y ,color='gray', linestyle='--',linewidth=1, alpha=0.3, picker=5):

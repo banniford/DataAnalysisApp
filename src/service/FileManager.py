@@ -37,7 +37,7 @@ class FileManager:
                 # 如果检测不到合适的表头行，你可以选择报错或给个默认值
                 self.main_window.msg("未找到稳定的表头行，请检查文件格式")
                 return
-            print(f"检测到表头行号：{header_line_index}")
+            self.main_window.msg(f"检测到表头行号：{header_line_index} 行。")
             # 2) 用 skiprows 指定要跳过的行，让 pandas 从检测到的那行开始当作表头
             self.df = pd.read_csv(
                 self.file_path[0],
@@ -54,6 +54,8 @@ class FileManager:
             self.df.dropna(axis=0, how='all', inplace=True)
             # ★ 只保留数值型的列（float / int）
             self.df = self.df.select_dtypes(include=[np.number])
+
+            self.main_window.msg(f"成功加载数据列表：{self.df.columns.tolist()}")
 
             # 5) 将 DataFrame 交给你的数据分析模块
             self.main_window.draw.data_analysis.set_table_data(self.df)
@@ -80,7 +82,12 @@ class FileManager:
 
     def addComboBoxItems(self, items: list):
         self.main_ui.comboBox2_1.addCheckableItems(items)
+        self.main_ui.comboBox2_1.setCurrentIndex(-1)  # 设置默认不选中任何选项
+        self.main_ui.comboBox2_1.lineEdit().clear()  # 确保 lineEdit 初始状态为空
         self.main_ui.comboBox2_2.addCheckableItems(items)
+        self.main_ui.comboBox2_2.setCurrentIndex(-1)  # 设置默认不选中任何选项
+        self.main_ui.comboBox2_2.lineEdit().clear()  # 确保 lineEdit 初始状态为空
+        
 
     # -------------------------------------------------------
     # 下面是通用的“自动检测表头行”函数 & 表头符号清洗函数

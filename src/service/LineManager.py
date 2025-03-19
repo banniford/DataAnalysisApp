@@ -4,11 +4,12 @@ from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QPushButton
 
 class LineManager:
-    def __init__(self,ax, y_value):
+    def __init__(self,ax, y_value,color):
         self.ax = ax
         self.y_value = y_value
         self.lines = []  # 存储所有折线对象
         self._stable_interval = []  # 稳定区间
+        self.color = color
 
 
     @property
@@ -23,10 +24,10 @@ class LineManager:
         self.clear_lines()
         # 重新绘制稳定区间
         if self._stable_interval==[]:
-            self.add_line(range(len(self.y_value)), self.y_value, color='red',alpha=0.5)
+            self.add_line(range(len(self.y_value)), self.y_value, color=self.color,alpha=0.5)
             return
         for i in self._stable_interval:
-            self.add_line(range(i[0],i[1]), self.y_value[i[0]:i[1]], color='red',alpha=0.5)
+            self.add_line(range(i[0],i[1]), self.y_value[i[0]:i[1]], color=self.color,alpha=0.5)
 
     
 

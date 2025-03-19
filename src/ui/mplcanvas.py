@@ -30,8 +30,8 @@ class MplCanvas(FigureCanvas):
     def _set_performance_options(self):
         """设置Matplotlib性能优化参数"""
         plt.rcParams['path.simplify'] = True        # 启用路径简化
-        plt.rcParams['path.simplify_threshold'] = 0.1  # 简化阈值
-        plt.rcParams['agg.path.chunksize'] = 10000  # 大块数据处理
+        plt.rcParams['path.simplify_threshold'] = 0.3  # 简化阈值
+        plt.rcParams['agg.path.chunksize'] = 15000  # 大块数据处理
         plt.rcParams['figure.facecolor'] = 'white'  # 禁用透明背景
         plt.rcParams['axes.facecolor'] = 'white'    # 禁用透明背景
         self.figure.set_tight_layout(True)           # 减少布局计算

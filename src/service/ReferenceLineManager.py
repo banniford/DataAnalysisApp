@@ -88,7 +88,7 @@ class ReferenceLineManager:
         # 检查 jumps 是否为空
         if not jumps:
             # 通知折线管理器,表格更新
-            self.update_lines_table(self.name,self.stable_interval)
+            self.update_lines_table(self.stable_interval)
             return
 
         # 确保第一个突变点不会导致前死区小于0
@@ -121,7 +121,7 @@ class ReferenceLineManager:
 
         # print(self.stable_interval)
         # 通知折线管理器,表格更新
-        self.update_lines_table(self.name,self.stable_interval)
+        self.update_lines_table(self.stable_interval)
 
 
 

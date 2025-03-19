@@ -48,32 +48,32 @@ class DataAnalysis:
         # 获取变量值
         return self.df[var_name].values
     
-    def cal_avg(self, var_name):
+    def cal_avg(self,master_var, var_name):
         # 计算平均值
-        if not self.stable_interval[var_name]:
+        if not self.stable_interval[master_var]:
             self.data_avg[var_name] = [self.df[var_name].mean()]
             return
         
         self.data_avg[var_name] = []
-        for interval in self.stable_interval[var_name]:
+        for interval in self.stable_interval[master_var]:
             avg = self.df[var_name][interval[0]:interval[1]].mean()
             self.data_avg[var_name].append(avg)
     
-    def cal_max_min(self, var_name):
+    def cal_max_min(self, master_var,var_name):
         # 计算最大最小值以及对应的索引
-        if not self.stable_interval[var_name]:
+        if not self.stable_interval[master_var]:
             self.data_max_min[var_name] = [[self.df[var_name].max(), self.df[var_name].idxmax() ,self.df[var_name].min(),self.df[var_name].idxmin() ]]
             return
-        print(len(self.df[var_name]))
         self.data_max_min[var_name] = []
-        print(self.stable_interval[var_name])
-        for interval in self.stable_interval[var_name]:
-            print(interval)
+        for interval in self.stable_interval[master_var]:
             max_value = self.df[var_name][interval[0]:interval[1]].max()
             max_value_index = self.df[var_name][interval[0]:interval[1]].idxmax()
             min_value = self.df[var_name][interval[0]:interval[1]].min()
             min_value_index = self.df[var_name][interval[0]:interval[1]].idxmin()
-            self.data_max_min[var_name].append((max_value,max_value_index, min_value,min_value_index))
+            self.data_max_min[var_name].append((max_value,
+                                                max_value_index,
+                                                min_value,
+                                                min_value_index))
         
         
     def detect_jumps(self, key , window, threshold):

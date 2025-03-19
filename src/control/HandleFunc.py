@@ -57,10 +57,10 @@ class MainWindow(QMainWindow):
 
     def checkAbleComboBoxLeft(self):
         items = self.main_ui.comboBox2_1.checkedItems()
-        if "全选" in items:
-            items.remove("全选")
+        # if "全选" in items:
+        #     items.remove("全选")
         # 设置主变量
-        self.update_master(items)
+        
         self.main_ui.comboBox2_3.clear()
         self.main_ui.comboBox2_3.addItems(items)
         # 设置下拉框样式, 使其不显示下拉箭头
@@ -69,13 +69,14 @@ class MainWindow(QMainWindow):
         self.main_ui.comboBox2_3.setMaxVisibleItems(5)
         # 设置下拉框滚动条显示策略
         self.main_ui.comboBox2_3.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        print(items)
+        self.update_master(items)
     
     def checkAbleComboBoxRight(self):
         items = self.main_ui.comboBox2_2.checkedItems()
-        if "全选" in items:
-            items.remove("全选")
+        # if "全选" in items:
+        #     items.remove("全选")
         # 设置从变量
-        self.update_slave(items)
         self.main_ui.comboBox2_4.clear()
         self.main_ui.comboBox2_4.showPopup()
         self.main_ui.comboBox2_4.addItems(items)
@@ -84,7 +85,9 @@ class MainWindow(QMainWindow):
         # 设置 下拉框最大显示条目数 
         self.main_ui.comboBox2_4.setMaxVisibleItems(5)
         # 设置下拉框滚动条显示策略
-        self.main_ui.comboBox2_4.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)   
+        self.main_ui.comboBox2_4.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded) 
+        print(items)
+        self.update_slave(items)  
         
     def update_comBobox_left_ylim(self):
         # 绘制主变量散点图
@@ -138,7 +141,7 @@ class MainWindow(QMainWindow):
             self.main_ui.comboBox2_1.addCheckableItems(diff)
             self.slave_var = slave_var
             for var_key in diff:
-                self.draw.clear_scatter(var_key)
+                self.draw.clear_slave(var_key)
 
     def msg(self, msg:str):
         # 打印时间在前面，格式化输出
