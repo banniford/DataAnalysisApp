@@ -138,7 +138,7 @@ class Draw:
         line_manager = self.line_manager.get(name)
         if line_manager:
             line_manager.clear_lines()
-        self.report_table.clear_all_rows()
+        self.report_table.clear_all_rows(name)
 
     def draw_master(self, master_var):
         """绘制主变量"""
@@ -159,6 +159,11 @@ class Draw:
                                             self.main_ui.spinBox_2.value())
         self.draw_reference_line(master_var,jumps)
     
+    def clear_master(self, master_var):
+        self.clear_scatter(master_var)
+        self.clear_reference_line(master_var)
+        self.clear_lines_table(master_var)
+
     def draw_slave(self, slave_var):
         """绘制从变量"""
         v = self.data_analysis.get_var_value(slave_var)

@@ -153,7 +153,7 @@ class FileManager:
 
         replace_map = {
             'λ': '_lambda_',
-            'Σ': '_Sigma_',
+            'Σ': '_sigma_',
             # 需要别的替换可自行补充
         }
         new_columns = []

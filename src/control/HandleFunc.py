@@ -33,6 +33,8 @@ class MainWindow(QMainWindow):
         self.main_ui.comboBox2_3.currentTextChanged.connect(self.update_comBobox_left_ylim)
         self.main_ui.comboBox2_4.currentTextChanged.connect(self.update_comBobox_right_ylim)
 
+        self.main_ui.spinBox_4.valueChanged.connect(lambda val: self.draw.report_table.update_precision(val))
+
     def on_spinBox_0_valueChanged(self):
         self.delt_T_set = self.main_ui.spinBox_0.value()
 
@@ -115,10 +117,7 @@ class MainWindow(QMainWindow):
             self.main_ui.comboBox2_2.addCheckableItems(diff)
             self.master_var = master_var
             for var_key in diff:
-                self.draw.clear_scatter(var_key)
-                self.draw.clear_reference_line(var_key)
-                self.draw.clear_lines_table(var_key)
-                self.draw.clear_reference_line(var_key)
+                self.draw.clear_master(var_key)
             
         
     def update_slave(self, slave_var:list):

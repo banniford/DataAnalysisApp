@@ -10,6 +10,8 @@ class ReportTable:
         self.table = self.main_ui.tableWidget
         self.data_analysis = data_analysis
         self.table_data = {}
+        # 小数点精度
+        self._precision = 2
 
 
         # 设置表格大小调整为内容适应
@@ -31,6 +33,19 @@ class ReportTable:
         # 绑定 Ctrl+C 复制快捷键
         self.table.keyPressEvent = self.keyPressEvent
 
+    @property
+    def precision(self):
+        return self._precision
+    
+    @precision.setter
+    def precision(self, value):
+        self._precision = value
+        # self.update_table_data()
+        pass
+
+    def update_precision(self, precision):
+        """更新小数点精度"""
+        self.precision = precision
 
     def update_table(self, name):
         """更新表格数据"""
@@ -150,6 +165,6 @@ class ReportTable:
         """清空所有行"""
         self.table.setRowCount(0)
 
-    def clear_all_columns(self):
-        """清空所有列"""
+    def clear_all_columns(self,name):
+        """清空name下的所有列"""
         self.table.setColumnCount(0)
