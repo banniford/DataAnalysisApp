@@ -9,6 +9,7 @@ from matplotlib.ticker import FuncFormatter
 from service.ReportTable import ReportTable
 from service.DataAnalysis import DataAnalysis
 import copy
+import random
 
 class Draw:
     def __init__(self, main_window: QMainWindow):
@@ -34,6 +35,7 @@ class Draw:
     def reset(self):
         # 绘制新的数据
         self.canvas.ax_left.cla()  # 清除当前轴上的所有内容
+        self.canvas.ax_right.cla()
         # 重新计算轴的限制并自动调整视图
         self.canvas.ax_left.relim()  # 重新计算数据的限制
         self.canvas.ax_left.autoscale_view()  # 自动调整视图的范围
@@ -45,17 +47,17 @@ class Draw:
         self.canvas.ax_left.set_xlabel("数据点位/ΔT(ms)")
         self.canvas.ax_left.set_ylabel("数值")
         # 左侧坐标轴在最上层
-        self.canvas.ax_left.set_zorder(1)
+        # self.canvas.ax_left.set_zorder(1)
         # Matplotlib 自动计算比较合适的边距和间隔。
         self.canvas.fig.tight_layout()
         # 清空表格
         self.report_table.clear_all_rows()
         
-    def create_line_manager(self, name, y_value,color)->LineManager:
+    def create_line_manager(self, name, y_value, color,ax)->LineManager:
         """创建折线管理器"""
         if name not in self.line_manager:
-            self.line_manager[name] = LineManager(self.canvas.ax_left,
-                                                    y_value,
+            self.line_manager[name] = LineManager(ax,
+                                                y_value,
                                                     color)
         return self.line_manager[name]
     
@@ -106,17 +108,23 @@ class Draw:
     
     def update_jumps(self):
         """根据新阈值更新突变点和参考线"""
-        name = self.main_ui.comboBox2_3.currentText()
-        reference_line_manager = self.reference_line_manager.get(name)
-        if not reference_line_manager:
-            return 
+        master_var = self.main_ui.comboBox2_3.currentText()
+        v = self.data_analysis.get_var_value(master_var)
+        reference_line_manager = self.create_reference_line_manager(
+                                            master_var, 
+                                            range(len(v)),
+                                            v,
+                                            self.main_ui.spinBox_1.value(),
+                                            self.main_ui.spinBox_2.value())
+        
         # 删除所有现有参考线
         reference_line_manager.clear_lines()
         # 重新检测突变点
-        jumps = self.data_analysis.pandas_detect_jumps(name,
+        jumps = self.data_analysis.pandas_detect_jumps(
+                                                master_var,
                                                 self.main_ui.spinBox_3.value(), 
                                                 self.slider.val)
-        self.draw_reference_line(name,jumps)
+        self.draw_reference_line(master_var,jumps)
         self.canvas.draw_idle()
 
     def update_lines_table(self,stable_interval):
@@ -127,16 +135,13 @@ class Draw:
         v = self.data_analysis.get_var_value(self.main_ui.comboBox2_3.currentText())
         line_manager = self.create_line_manager(self.main_ui.comboBox2_3.currentText(),
                                                 v,
-                                                "red")
+                                                "red",
+                                                self.canvas.ax_left)
         # 更新稳定区间
         line_manager.stable_interval = stable_interval
         
         for var in self.main_window.slave_var:
-            v = self.data_analysis.get_var_value(var)
-            line_manager = self.create_line_manager(var,
-                                                    v,
-                                                    "blue")
-            line_manager.stable_interval = stable_interval
+            self._line(var, stable_interval,self.canvas.ax_right)
         
         
         # 设置稳定区间
@@ -152,55 +157,42 @@ class Draw:
         # 更新表格为当前主变量和从变量
         self.report_table.update_table(cal_list)
 
-    def clear_lines_table(self, master_var):
-        """清除折线_表格"""
-        line_manager = self.line_manager.get(master_var)
-        if line_manager:
-            line_manager.clear_lines()
+    def clear_table(self):    
         self.report_table.clear_all_rows()
 
     def draw_master(self, master_var):
         """绘制主变量"""
         v = self.data_analysis.get_var_value(master_var)
-        self._scatter(master_var, range(len(v)), v)
+        color = self._line(master_var, [],self.canvas.ax_left)
+        self._scatter(master_var, range(len(v)), v,color,ax=self.canvas.ax_left)
         # 更新ax范围自动适配
         # self.canvas.ax_left.relim()
         # self.canvas.ax_left.autoscale_view()
-        
-        # 检测突变点
-        jumps = self.data_analysis.pandas_detect_jumps(master_var, 
-                                                       self.main_ui.spinBox_3.value(), 
-                                                       self.slider.val)
-        self.create_reference_line_manager(master_var, 
-                                            range(len(v)),
-                                            v,
-                                            self.main_ui.spinBox_1.value(),
-                                            self.main_ui.spinBox_2.value())
-        self.draw_reference_line(master_var,jumps)
-    
+
     def clear_master(self, master_var):
         self.clear_scatter(master_var)
         self.clear_reference_line(master_var)
-        self.clear_lines_table(master_var)
+        self.clear_lines(master_var)
+        self.clear_table()
 
     def draw_slave(self, slave_var):
         """绘制从变量"""
         v = self.data_analysis.get_var_value(slave_var)
-        self._scatter(slave_var, range(len(v)), v)
-        if self.main_ui.comboBox2_3.currentText() != "":
-            self.update_lines_table(self.data_analysis.stable_interval[self.main_ui.comboBox2_3.currentText()])
+        color = self._line(slave_var, [],self.canvas.ax_right)
+        self._scatter(slave_var, range(len(v)), v,color,ax=self.canvas.ax_right)
         # 更新ax范围自动适配
-        self.canvas.ax_right.relim()
-        self.canvas.ax_right.autoscale_view()
+        # self.canvas.ax_right.relim()
+        # self.canvas.ax_right.autoscale_view()
 
     def clear_slave(self, slave_var):
         self.clear_scatter(slave_var)
+        self.clear_lines(slave_var)
 
-
-    def _scatter(self, label, x ,y ,color='gray', linestyle='--',linewidth=1, alpha=0.3, picker=5):
+    def _scatter(self, label, x ,y ,color='gray', linestyle='--',linewidth=1, alpha=0.3, picker=5,ax = None):
+        """添加散点图"""
         if label in self.scatter_manager:
             return 
-        scatter= self.canvas.ax_left.scatter(x, 
+        scatter= ax.scatter(x, 
                                              y, 
                                              label = label,
                                              color=color, linestyle=linestyle, 
@@ -211,24 +203,65 @@ class Draw:
                                              rasterized=True     # 启用栅格化
                                              )
         # 添加鼠标悬停显示数据点数值的功能
-        mplcursors.cursor(scatter, hover=True).connect(
+        mplcursors.cursor(scatter, hover=2).connect(
             "add", lambda sel: sel.annotation.set_text(
                 f"({int(sel.target[0])}, {sel.target[1]:.2f})"
             )
         )
         # 更新图例
-        self.canvas.ax_left.legend()
+        self.canvas.ax_left.legend(loc = "upper left")
+        self.canvas.ax_right.legend(loc = "upper right")
         # 添加到管理器
         self.scatter_manager[label] = scatter
         self.canvas.draw_idle()
+
+    def _line(self, label, stable_interval,ax):
+        """添加一条折线"""
+        # 创建折线管理器
+        # 颜色列表，除了红色，蓝色的其他随机颜色
+        color = ["green", "yellow","cyan","magenta", "purple", "orange"]
+        cur_color = "red"
+        v = self.data_analysis.get_var_value(label)
+        if label in self.main_window.master_var:
+            if label == self.main_ui.comboBox2_3.currentText():
+                line_manager = self.create_line_manager(label,
+                                                        v,
+                                                        "red",ax)
+                cur_color = "red"
+            else:
+                line_manager = self.create_line_manager(label,
+                                                        v,
+                                                        "blue",
+                                                        ax)
+                cur_color = "blue"
+        else:
+            # 随机选择颜色,保留列表内容
+            random_color = random.choice(color)
+            line_manager = self.create_line_manager(label,
+                                                    v,
+                                                    random_color,
+                                                    ax)
+            cur_color = random_color
+        # 设置稳定区间
+        line_manager.stable_interval = stable_interval
+        return cur_color
+    
+    def clear_lines(self, var):
+        """清除折线"""
+        line_manager = self.line_manager.get(var)
+        if line_manager:
+            line_manager.clear_lines()
+            self.line_manager.pop(var)
+            
 
     def clear_scatter(self, label):
         scatter = self.scatter_manager.get(label)
         if scatter:
             scatter.remove()
-            self.scatter_manager.pop(label)
+            del self.scatter_manager[label]
             # 更新图例
-            self.canvas.ax_left.legend()
+            self.canvas.ax_left.legend(loc = "upper left")
+            self.canvas.ax_right.legend(loc = "upper right")
             self.canvas.draw_idle()
 
     def update_left_ylim(self):

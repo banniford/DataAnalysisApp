@@ -60,16 +60,20 @@ class MainWindow(QMainWindow):
         # if "全选" in items:
         #     items.remove("全选")
         # 设置主变量
-        
+        # 获取之前的主变量
+        text = self.main_ui.comboBox2_3.currentText()
+        # 清除主变量
         self.main_ui.comboBox2_3.clear()
         self.main_ui.comboBox2_3.addItems(items)
+        # 设置之前的主变量
+        if text in items:
+            self.main_ui.comboBox2_3.setCurrentIndex(items.index(text))
         # 设置下拉框样式, 使其不显示下拉箭头
         self.main_ui.comboBox2_3.setStyleSheet("QComboBox {combobox-popup: 0;}")
         # 设置下拉框最大显示条目数
         self.main_ui.comboBox2_3.setMaxVisibleItems(5)
         # 设置下拉框滚动条显示策略
         self.main_ui.comboBox2_3.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        print(items)
         self.update_master(items)
     
     def checkAbleComboBoxRight(self):
@@ -86,20 +90,25 @@ class MainWindow(QMainWindow):
         self.main_ui.comboBox2_4.setMaxVisibleItems(5)
         # 设置下拉框滚动条显示策略
         self.main_ui.comboBox2_4.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded) 
-        print(items)
         self.update_slave(items)  
         
     def update_comBobox_left_ylim(self):
-        # 绘制主变量散点图
+        '''
+        更新左侧y轴范围
+        '''
         if self.main_ui.comboBox2_3.currentText() == "":
             return
+        # 更新左侧y轴范围
         self.draw.update_left_ylim()
         
 
     def update_comBobox_right_ylim(self):
-        # 绘制从变量
+        '''
+        更新 右侧y轴范围
+        '''
         if self.main_ui.comboBox2_4.currentText() == "":
             return
+        # 更新右侧y轴范围
         self.draw.update_right_ylim()
 
     def update_master(self, master_var:list):
