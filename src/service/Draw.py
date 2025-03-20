@@ -109,6 +109,8 @@ class Draw:
     def update_jumps(self):
         """根据新阈值更新突变点和参考线"""
         master_var = self.main_ui.comboBox2_3.currentText()
+        if not master_var:
+            return
         v = self.data_analysis.get_var_value(master_var)
         reference_line_manager = self.create_reference_line_manager(
                                             master_var, 

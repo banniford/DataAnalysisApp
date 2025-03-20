@@ -344,8 +344,11 @@ class Ui_MainWindow(object):
         self.action_4.setObjectName("action_4")
         self.action_5 = QtGui.QAction(parent=MainWindow)
         self.action_5.setObjectName("action_5")
+        self.action_2 = QtGui.QAction(parent=MainWindow)
+        self.action_2.setObjectName("action_2")
         self.menu_0.addAction(self.action_0)
         self.menu_0.addAction(self.action_1)
+        self.menu_0.addAction(self.action_2)
         self.menubar.addAction(self.menu_0.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -374,5 +377,6 @@ class Ui_MainWindow(object):
         self.action_1.setText(_translate("MainWindow", "另存为"))
         self.action_4.setText(_translate("MainWindow", "突变算法"))
         self.action_5.setText(_translate("MainWindow", "突变检测算法"))
+        self.action_2.setText(_translate("MainWindow", "批量处理csv文件"))
 from ui.checkablecombobox import CheckableComboBox
 from ui.mplcanvas import MplWidget

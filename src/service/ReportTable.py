@@ -42,7 +42,8 @@ class ReportTable:
     @precision.setter
     def precision(self, value):
         self._precision = value
-        self.update_table(self.cal_list)
+        if self.cal_list:
+            self.update_table(self.cal_list)
 
     def update_precision(self, precision):
         """更新小数点精度"""
@@ -88,6 +89,14 @@ class ReportTable:
             # 添加第七列为最小值
             self.add_column(f"{i} 最小值", [f"{np.floor(max_min[2] * (10 ** self.precision)) / (10 ** self.precision)}" for max_min in self.table_data[i]['max_min']])
 
+    def update_csv_table(self, table_data:dict):
+        """更新表格数据"""
+        self.clear_all_columns()
+        for key,value in table_data.items():
+            # 检查列表是否为数值列表，如果是则保留小数点精度
+            if all(isinstance(val, (float)) for val in value):
+                value = [np.floor(val * (10 ** self.precision)) / (10 ** self.precision) for val in value]
+            self.add_column(key, value)
 
     def show_context_menu(self, position):
         """显示右键菜单"""
@@ -175,3 +184,21 @@ class ReportTable:
     def clear_all_columns(self):
         """清空下的所有列"""
         self.table.setColumnCount(0)
+
+    def get_all_table_data(self):
+        """获取表格所有数据"""
+        table_data = []
+
+        # 获取列头
+        column_headers = self.get_column_headers()
+        table_data.append(column_headers)
+
+        # 遍历所有行和列获取数据
+        for row in range(self.table.rowCount()):
+            row_data = []
+            for col in range(self.table.columnCount()):
+                item = self.table.item(row, col)
+                row_data.append(item.text() if item else "")
+            table_data.append(row_data)
+
+        return table_data

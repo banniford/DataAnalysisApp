@@ -118,3 +118,15 @@ class DataAnalysis:
                 clean_jumps.append(jumps[i])
 
         return clean_jumps
+    
+    def cal_csv_avg(self,df, var_name):
+        # 计算平均值
+        return df[var_name].mean()
+
+    def cal_csv_min(self,df,var_name):
+        # 计算最小值
+        return df[var_name].min(),df[var_name].idxmin()
+
+    def cal_csv_max(self,df,var_name):
+        # 计算最大值
+        return df[var_name].max(),df[var_name].idxmax()

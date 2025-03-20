@@ -10,6 +10,8 @@ class FileManager:
         self.main_ui = main_window.main_ui
         self.cwd = os.getcwd()
         self.file_path = None
+        self.folder_path = None
+        self.csv_files = []
         self.df = None
 
     def clear(self):
@@ -18,6 +20,50 @@ class FileManager:
         self.main_ui.comboBox2_1.clear()
         self.main_ui.comboBox2_2.clear()
         self.main_window.draw.reset()
+
+    def load_folder(self):
+        """
+        获取文件夹下所有的 csv 文件
+        """
+        self.folder_path = QFileDialog.getExistingDirectory(self.main_window, '选择文件夹', self.cwd)
+        if not self.folder_path:  # 用户取消
+            self.main_window.msg("未选择文件夹")
+            return None
+        self.main_window.msg(f"选择文件夹：{self.folder_path}")
+        self.csv_files = [f for f in os.listdir(self.folder_path) if f.endswith('.csv')]
+        if not self.csv_files:
+            self.main_window.msg(f"文件夹 {self.folder_path} 下没有 csv 文件")
+            return None
+        self.main_window.msg(f"文件夹下的 csv 文件：{self.csv_files}")
+        # 获取第一个csv文件的表头
+        df = self.load_file(os.path.join(self.folder_path, self.csv_files[0]))
+        return df.columns.tolist()
+        
+
+    def load_file(self, folder_path):
+         # 1) 自动检测 CSV 中真正的表头行号
+        header_line_index = self._detect_header_line_by_colcount(folder_path)
+        if header_line_index is None:
+            # 如果检测不到合适的表头行，你可以选择报错或给个默认值
+            self.main_window.msg("未找到稳定的表头行，请检查文件格式")
+            return
+        self.main_window.msg(f"检测到表头行号：{header_line_index} 行。")
+        # 2) 用 skiprows 指定要跳过的行，让 pandas 从检测到的那行开始当作表头
+        self.df = pd.read_csv(
+            folder_path,
+            skiprows=header_line_index,  # 跳过前 header_line_index 行
+            header=0,                    # 让这一行成为 columns
+            float_precision='round_trip',
+            skip_blank_lines=True
+        )
+
+        # 3) 替换表头中的特殊符号
+        self._clean_special_symbols_in_columns()
+
+        # 4) 删除全部为 NaN 的行（如果有多余空行）
+        self.df.dropna(axis=0, how='all', inplace=True)
+        # ★ 只保留数值型的列（float / int）
+        return self.df.select_dtypes(include=[np.number])
 
     def loadCSVFile(self):
         """
@@ -32,29 +78,7 @@ class FileManager:
 
         try:
             # 1) 自动检测 CSV 中真正的表头行号
-            header_line_index = self._detect_header_line_by_colcount(self.file_path[0])
-            if header_line_index is None:
-                # 如果检测不到合适的表头行，你可以选择报错或给个默认值
-                self.main_window.msg("未找到稳定的表头行，请检查文件格式")
-                return
-            self.main_window.msg(f"检测到表头行号：{header_line_index} 行。")
-            # 2) 用 skiprows 指定要跳过的行，让 pandas 从检测到的那行开始当作表头
-            self.df = pd.read_csv(
-                self.file_path[0],
-                skiprows=header_line_index,  # 跳过前 header_line_index 行
-                header=0,                    # 让这一行成为 columns
-                float_precision='round_trip',
-                skip_blank_lines=True
-            )
-
-            # 3) 替换表头中的特殊符号
-            self._clean_special_symbols_in_columns()
-
-            # 4) 删除全部为 NaN 的行（如果有多余空行）
-            self.df.dropna(axis=0, how='all', inplace=True)
-            # ★ 只保留数值型的列（float / int）
-            self.df = self.df.select_dtypes(include=[np.number])
-
+            self.df = self.load_file(self.file_path[0])
             self.main_window.msg(f"成功加载数据列表：{self.df.columns.tolist()}")
 
             # 5) 将 DataFrame 交给你的数据分析模块
@@ -74,7 +98,11 @@ class FileManager:
             self.main_window.msg("未选择保存路径")
             return
         try:
-            self.df.to_csv(save_path[0], index=False)
+            table_data = self.main_window.draw.report_table.get_all_table_data()
+            # 将数据转换为 DataFrame
+            df = pd.DataFrame(table_data[1:], columns=table_data[0])  # 第一行是表头
+            # 保存 CSV
+            df.to_csv(save_path[0], index=False, encoding="utf-8-sig")  # 防止乱码
             self.main_window.msg(f"文件 {save_path[0]} 保存成功")
         except Exception as e:
             print(e)

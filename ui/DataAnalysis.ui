@@ -804,6 +804,7 @@
     </property>
     <addaction name="action_0"/>
     <addaction name="action_1"/>
+    <addaction name="action_2"/>
    </widget>
    <addaction name="menu_0"/>
   </widget>
@@ -838,6 +839,11 @@
   <action name="action_5">
    <property name="text">
     <string>突变检测算法</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>批量处理csv文件</string>
    </property>
   </action>
  </widget>
