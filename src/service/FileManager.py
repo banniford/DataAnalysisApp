@@ -13,6 +13,10 @@ class FileManager:
         self.folder_path = None
         self.csv_files = []
         self.df = None
+        self.header_threshold = 15
+
+    def change_header_threshold(self, value):
+        self.header_threshold = value
 
     def clear(self):
         self.file_path = None
@@ -154,7 +158,7 @@ class FileManager:
         # 你也可以改成“找最大列数”或者别的更复杂判断。
         for i in range(len(col_counts)):
             c = col_counts[i]
-            if c > 15: # 举个例子，假设列数大于 15 就是表头
+            if c > self.header_threshold: # 举个例子，假设列数大于 15 就是表头
                 # 检查后面若干行，如果列数也和 c 差不多，就认为是表头行
                 # 这里简单判断下一行也有同样列数就通过
                 if i + 1 < len(col_counts) and col_counts[i+1] == c:

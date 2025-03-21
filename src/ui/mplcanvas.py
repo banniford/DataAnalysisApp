@@ -22,8 +22,10 @@ class MplCanvas(FigureCanvas):
         super().__init__(self.fig)
         self.setParent(parent)
         self.ax_right = self.ax_left.twinx()
+        
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setFocus()
+        
         # 设置性能优化参数
         self._set_performance_options()
 

@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
         self.draw = Draw(self)
         # 采集间隔
         # self.delt_T = 200
-        self.delt_T_set = self.main_ui.spinBox_0.value()
+        self.delt_T_set = self.main_ui.doubleSpinBox_1.value()
         self.master_var = []
         self.slave_var = []
 
@@ -27,8 +27,9 @@ class MainWindow(QMainWindow):
         self.main_ui.action_0.triggered.connect(self.file_manager.loadCSVFile)
         self.main_ui.action_1.triggered.connect(self.file_manager.saveCSVFile)
         self.main_ui.action_2.triggered.connect(self.open_folder_csv)
+        self.main_ui.action_3.triggered.connect(self.draw.set_scatter_visible)
 
-        self.main_ui.spinBox_0.valueChanged.connect(self.on_spinBox_0_valueChanged)
+        self.main_ui.doubleSpinBox_1.valueChanged.connect(self.on_doubleSpinBox_1_valueChanged)
         self.main_ui.checkBox_3.stateChanged.connect(self.changeDeltT)
         self.main_ui.comboBox2_1.currentTextChanged.connect(self.checkAbleComboBoxLeft)
         self.main_ui.comboBox2_2.currentTextChanged.connect(self.checkAbleComboBoxRight)
@@ -37,13 +38,13 @@ class MainWindow(QMainWindow):
 
         self.main_ui.spinBox_4.valueChanged.connect(lambda val: self.draw.report_table.update_precision(val))
 
-        
-
+    
     def open_folder_csv(self):
         """打开子窗口，并确保它在主窗口之上"""
         self.folder = Folder()
         self.folder.main_ui.pushButton_1.clicked.connect(self.load_folder)
         self.folder.main_ui.pushButton_2.clicked.connect(self.cal_csv)
+        self.folder.main_ui.spinBox_0.valueChanged.connect(lambda val: self.file_manager.change_header_threshold(val))
         if not hasattr(self, 'folder') or self.folder is None:
             self.folder = Folder(self)  # 让 Folder 依赖 MainWindow
         self.folder.show()  # 以非模态方式打开
@@ -127,8 +128,8 @@ class MainWindow(QMainWindow):
 
 
 
-    def on_spinBox_0_valueChanged(self):
-        self.delt_T_set = self.main_ui.spinBox_0.value()
+    def on_doubleSpinBox_1_valueChanged(self):
+        self.delt_T_set = self.main_ui.doubleSpinBox_1.value()
 
     def _raw_index_formatter(self, value, pos):
         """示例：直接显示整数索引"""
@@ -140,11 +141,17 @@ class MainWindow(QMainWindow):
 
     def changeDeltT(self):
         if self.main_ui.checkBox_3.isChecked():
-            self.main_ui.spinBox_0.setEnabled(False)
+            self.main_ui.doubleSpinBox_1.setEnabled(False)
             self.draw.update_x_formatter(self._scaled_index_formatter)
+            # 设置y轴标签，在右下角
+            xlabel = self.draw.canvas.ax_left.set_xlabel("T[s]", labelpad=0.1)
+            xlabel.set_horizontalalignment("right")
+            xlabel.set_position((1.0, 1.0))  # 可根据效果微调位置
         else:
-            self.main_ui.spinBox_0.setEnabled(True)
+            self.main_ui.doubleSpinBox_1.setEnabled(True)
             self.draw.update_x_formatter(self._raw_index_formatter)
+            # xlabel 设置为空，不显示
+            self.draw.canvas.ax_left.set_xlabel("数据点位")
 
 
     def checkAbleComboBoxLeft(self):

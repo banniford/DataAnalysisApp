@@ -44,22 +44,32 @@ class Draw:
         self.scatter_manager = {}
         # 添加表头
         self.canvas.ax_left.set_title("数据分析(点击拖动参考线，按D删除，按C清空，按A添加)")
-        self.canvas.ax_left.set_xlabel("数据点位/ΔT(ms)")
-        self.canvas.ax_left.set_ylabel("数值")
+        self.canvas.ax_left.set_xlabel("数据点位")
+        # 增加背景网格
+        self.canvas.ax_left.grid(True, linestyle='-', alpha=0.8)
+        self.canvas.ax_right.grid(False)
         # 左侧坐标轴在最上层
         # self.canvas.ax_left.set_zorder(1)
         # Matplotlib 自动计算比较合适的边距和间隔。
         self.canvas.fig.tight_layout()
         # 清空表格
         self.report_table.clear_all_rows()
-        
-    def create_line_manager(self, name, y_value, color,ax)->LineManager:
+    
+    def set_scatter_visible(self):
+        """设置散点图可见"""
+        for scatter in self.scatter_manager.values():
+            scatter.set_visible(False)
+        self.scatter_visible = False
+        self.canvas.draw_idle()
+    
+    def create_line_manager(self, label, y_value, color,ax)->LineManager:
         """创建折线管理器"""
-        if name not in self.line_manager:
-            self.line_manager[name] = LineManager(ax,
+        if label not in self.line_manager:
+            self.line_manager[label] = LineManager(label,
+                                                   ax,
                                                 y_value,
                                                     color)
-        return self.line_manager[name]
+        return self.line_manager[label]
     
     def create_reference_line_manager(self, name,xpos_list,y_value,left_Zone,right_Zone)->ReferenceLineManager:
         """创建参考线管理器"""
@@ -83,11 +93,14 @@ class Draw:
     
     def update_slider_threshold(self):
         """更新阈值"""
-        # 删除滑块
-        self.canvas.fig.delaxes(self.slider.ax)
         # 添加
         initial_threshold = self.main_ui.doubleSpinBox_2.value()
         max_threshold = self.main_ui.doubleSpinBox_3.value()
+        if initial_threshold > max_threshold:
+            self.main_window.msg("最小阈值不能大于最大阈值")
+            return
+        # 删除滑块
+        self.canvas.fig.delaxes(self.slider.ax)
         self.slider = self.add_threshold_slider(initial_threshold,max_threshold)
         self.slider.on_changed(lambda val: self.update_jumps())
         
@@ -195,8 +208,7 @@ class Draw:
         if label in self.scatter_manager:
             return 
         scatter= ax.scatter(x, 
-                                             y, 
-                                             label = label,
+                                             y,
                                              color=color, linestyle=linestyle, 
                                              linewidth=linewidth,
                                              alpha=alpha, 
@@ -213,6 +225,7 @@ class Draw:
         # 更新图例
         self.canvas.ax_left.legend(loc = "upper left")
         self.canvas.ax_right.legend(loc = "upper right")
+        self.canvas.fig.tight_layout()
         # 添加到管理器
         self.scatter_manager[label] = scatter
         self.canvas.draw_idle()
@@ -254,6 +267,11 @@ class Draw:
         if line_manager:
             line_manager.clear_lines()
             self.line_manager.pop(var)
+        # 更新图例
+        self.canvas.ax_left.legend(loc = "upper left")
+        self.canvas.ax_right.legend(loc = "upper right")
+        self.canvas.fig.tight_layout()
+        self.canvas.draw_idle()
             
 
     def clear_scatter(self, label):
