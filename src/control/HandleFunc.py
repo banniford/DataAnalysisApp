@@ -17,7 +17,6 @@ class MainWindow(QMainWindow):
         self.main_ui.setupUi(self)
         self.file_manager = FileManager(self)
         self.draw = Draw(self)
-        self.folder = Folder()
         # 采集间隔
         # self.delt_T = 200
         self.delt_T_set = self.main_ui.spinBox_0.value()
@@ -38,11 +37,13 @@ class MainWindow(QMainWindow):
 
         self.main_ui.spinBox_4.valueChanged.connect(lambda val: self.draw.report_table.update_precision(val))
 
-        self.folder.main_ui.pushButton_1.clicked.connect(self.load_folder)
-        self.folder.main_ui.pushButton_2.clicked.connect(self.cal_csv)
+        
 
     def open_folder_csv(self):
         """打开子窗口，并确保它在主窗口之上"""
+        self.folder = Folder()
+        self.folder.main_ui.pushButton_1.clicked.connect(self.load_folder)
+        self.folder.main_ui.pushButton_2.clicked.connect(self.cal_csv)
         if not hasattr(self, 'folder') or self.folder is None:
             self.folder = Folder(self)  # 让 Folder 依赖 MainWindow
         self.folder.show()  # 以非模态方式打开

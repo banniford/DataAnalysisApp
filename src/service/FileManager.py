@@ -30,7 +30,7 @@ class FileManager:
             self.main_window.msg("未选择文件夹")
             return None
         self.main_window.msg(f"选择文件夹：{self.folder_path}")
-        self.csv_files = [f for f in os.listdir(self.folder_path) if f.endswith('.csv')]
+        self.csv_files = [f for f in os.listdir(self.folder_path) if f.lower().endswith('.csv')]
         if not self.csv_files:
             self.main_window.msg(f"文件夹 {self.folder_path} 下没有 csv 文件")
             return None
@@ -71,7 +71,7 @@ class FileManager:
         然后用 skiprows + header=0 让 pandas 正式解析该文件。
         """
         self.clear()
-        self.file_path = QFileDialog.getOpenFileName(self.main_window, '选择CSV文件', '', 'CSV files(*.csv)')
+        self.file_path = QFileDialog.getOpenFileName(self.main_window, '选择CSV文件', self.cwd, 'CSV files(*.csv *.CSV)')
         if not self.file_path[0]:  # 用户取消
             self.main_window.msg("未选择 csv 文件")
             return
