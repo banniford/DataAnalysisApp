@@ -145,6 +145,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -171,6 +172,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -188,6 +190,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -214,6 +217,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -231,6 +235,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -242,40 +247,6 @@
     </property>
     <property name="textFormat">
      <enum>Qt::AutoText</enum>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="spinBox_0">
-    <property name="geometry">
-     <rect>
-      <x>80</x>
-      <y>10</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>黑体</family>
-      <pointsize>11</pointsize>
-     </font>
-    </property>
-    <property name="specialValueText">
-     <string>200</string>
-    </property>
-    <property name="minimum">
-     <number>0</number>
-    </property>
-    <property name="maximum">
-     <number>999999</number>
-    </property>
-    <property name="singleStep">
-     <number>100</number>
-    </property>
-    <property name="value">
-     <number>300</number>
-    </property>
-    <property name="displayIntegerBase">
-     <number>10</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
@@ -291,6 +262,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -348,6 +320,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -436,6 +409,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -462,6 +436,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -535,6 +510,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -552,6 +528,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -578,6 +555,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -604,6 +582,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -649,6 +628,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -706,6 +686,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -763,6 +744,7 @@
      <font>
       <family>黑体</family>
       <pointsize>12</pointsize>
+      <weight>50</weight>
       <bold>false</bold>
      </font>
     </property>
@@ -776,6 +758,34 @@
      <enum>Qt::AutoText</enum>
     </property>
    </widget>
+   <widget class="QDoubleSpinBox" name="doubleSpinBox_1">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>10</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>黑体</family>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="decimals">
+     <number>2</number>
+    </property>
+    <property name="maximum">
+     <double>10000.000000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.001000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.200000000000000</double>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -783,7 +793,7 @@
      <x>0</x>
      <y>0</y>
      <width>1700</width>
-     <height>22</height>
+     <height>29</height>
     </rect>
    </property>
    <property name="font">
@@ -806,7 +816,14 @@
     <addaction name="action_1"/>
     <addaction name="action_2"/>
    </widget>
+   <widget class="QMenu" name="menu_1">
+    <property name="title">
+     <string>视图</string>
+    </property>
+    <addaction name="action_3"/>
+   </widget>
    <addaction name="menu_0"/>
+   <addaction name="menu_1"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_0">
@@ -844,6 +861,11 @@
   <action name="action_2">
    <property name="text">
     <string>批量处理csv文件</string>
+   </property>
+  </action>
+  <action name="action_3">
+   <property name="text">
+    <string>隐藏散点</string>
    </property>
   </action>
  </widget>
