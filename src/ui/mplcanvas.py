@@ -1,20 +1,35 @@
 # mpl_canvas.py
+import sys
+import os
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
-from matplotlib import font_manager,rcParams
+from matplotlib import font_manager, rcParams
 from PyQt6.QtCore import Qt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
+# 获取打包或开发模式下的资源路径
+def resource_path(relative_path):
+    """获取资源文件的路径，兼容 PyInstaller 和源码运行"""
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller 打包后的临时路径
+        base_path = sys._MEIPASS
+    else:
+        # 源码运行时获取项目根路径（src 上一级）
+        base_path = os.path.dirname(os.path.abspath(__file__))  # 当前文件 src/ui/mplcanvas.py
+        base_path = os.path.abspath(os.path.join(base_path, "..", ".."))  # 回到项目根
+
+    return os.path.join(base_path, relative_path)
+
 # 字体加载
-font_path = "../assets/font/SourceHanSansSC-Bold.otf"
+font_path = resource_path("assets/font/SourceHanSansSC-Bold.otf")
 font_manager.fontManager.addfont(font_path)
 prop = font_manager.FontProperties(fname=font_path)
 
 # 字体设置
-rcParams['font.sans-serif'] = prop.get_name()  # 根据名称设置字体
-rcParams['axes.unicode_minus'] = False  # 使坐标轴刻度标签正常显示正负号
+rcParams['font.sans-serif'] = prop.get_name()  # 设置字体
+rcParams['axes.unicode_minus'] = False         # 正负号正常显示
 
 class MplCanvas(FigureCanvas):
     def __init__(self, parent=None, width=10, height=5, dpi=100):
@@ -45,7 +60,6 @@ class MplWidget(QWidget):
         
         # ---- 新增：创建工具栏 ----
         self.toolbar = NavigationToolbar(self.canvas, self)
-        
         self._set_layout()
  
     def _set_layout(self):
