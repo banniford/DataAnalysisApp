@@ -3,12 +3,14 @@ from PyQt6.QtWidgets import QFileDialog
 import os
 import pandas as pd
 import numpy as np
+from PyQt6.QtWidgets import QMainWindow
 
 class FileManager:
-    def __init__(self, main_window):
+    def __init__(self, main_window: QMainWindow):
         self.main_window = main_window
         self.main_ui = main_window.main_ui
-        self.cwd = os.getcwd()
+        self.file_cwd = os.getcwd()
+        self.folder_cwd = os.getcwd()
         self.file_path = None
         self.folder_path = None
         self.csv_files = []
@@ -19,21 +21,52 @@ class FileManager:
         self.header_threshold = value
 
     def clear(self):
-        self.file_path = None
-        self.df = None
         self.main_ui.comboBox2_1.clear()
         self.main_ui.comboBox2_2.clear()
+        self.main_window.master_var = []
+        self.main_window.slave_var = []
         self.main_window.draw.reset()
+
+    def loadCSVFile(self):
+        """
+        通用方式：先手动读取 CSV 文件的所有行，自动检测到哪一行才是真正的表头；
+        然后用 skiprows + header=0 让 pandas 正式解析该文件。
+        """
+        self.file_path = QFileDialog.getOpenFileName(self.main_window, '选择CSV文件', self.file_cwd, 'CSV files(*.csv *.CSV)')
+        if not self.file_path[0]:  # 用户取消
+            self.main_window.msg("未选择 csv 文件")
+            return
+
+        try:
+            # 1) 自动检测 CSV 中真正的表头行号
+            self.df = self.load_file(self.file_path[0])
+            self.file_cwd = os.path.dirname(self.file_path[0])
+            self.main_window.msg(f"成功加载数据列表：{self.df.columns.tolist()}")
+
+            # 清空ui中的数据
+            self.clear()
+            
+            # 5) 将 DataFrame 交给你的数据分析模块
+            self.main_window.draw.data_analysis.set_table_data(self.df)
+            table_header = self.main_window.draw.data_analysis.get_table_header()
+            self.addComboBoxItems(table_header)
+
+            self.main_window.msg(f"文件 {self.file_path[0]} 加载成功")
+        except Exception as e:
+            print(e)
+            self.main_window.msg(f"文件 {self.file_path[0]} 加载失败")
+            self.clear()
 
     def load_folder(self):
         """
         获取文件夹下所有的 csv 文件
         """
-        self.folder_path = QFileDialog.getExistingDirectory(self.main_window, '选择文件夹', self.cwd)
+        self.folder_path = QFileDialog.getExistingDirectory(self.main_window, '选择文件夹', self.folder_cwd)
         if not self.folder_path:  # 用户取消
             self.main_window.msg("未选择文件夹")
             return None
         self.main_window.msg(f"选择文件夹：{self.folder_path}")
+        self.folder_cwd = self.folder_path
         self.csv_files = [f for f in os.listdir(self.folder_path) if f.lower().endswith('.csv')]
         if not self.csv_files:
             self.main_window.msg(f"文件夹 {self.folder_path} 下没有 csv 文件")
@@ -43,7 +76,6 @@ class FileManager:
         df = self.load_file(os.path.join(self.folder_path, self.csv_files[0]))
         return df.columns.tolist()
         
-
     def load_file(self, folder_path):
          # 1) 自动检测 CSV 中真正的表头行号
         header_line_index = self._detect_header_line_by_colcount(folder_path)
@@ -69,32 +101,7 @@ class FileManager:
         # ★ 只保留数值型的列（float / int）
         return self.df.select_dtypes(include=[np.number])
 
-    def loadCSVFile(self):
-        """
-        通用方式：先手动读取 CSV 文件的所有行，自动检测到哪一行才是真正的表头；
-        然后用 skiprows + header=0 让 pandas 正式解析该文件。
-        """
-        self.clear()
-        self.file_path = QFileDialog.getOpenFileName(self.main_window, '选择CSV文件', self.cwd, 'CSV files(*.csv *.CSV)')
-        if not self.file_path[0]:  # 用户取消
-            self.main_window.msg("未选择 csv 文件")
-            return
-
-        try:
-            # 1) 自动检测 CSV 中真正的表头行号
-            self.df = self.load_file(self.file_path[0])
-            self.main_window.msg(f"成功加载数据列表：{self.df.columns.tolist()}")
-
-            # 5) 将 DataFrame 交给你的数据分析模块
-            self.main_window.draw.data_analysis.set_table_data(self.df)
-            table_header = self.main_window.draw.data_analysis.get_table_header()
-            self.addComboBoxItems(table_header)
-
-            self.main_window.msg(f"文件 {self.file_path[0]} 加载成功")
-        except Exception as e:
-            print(e)
-            self.main_window.msg(f"文件 {self.file_path[0]} 加载失败")
-            self.clear()
+    
 
     def saveCSVFile(self):
         save_path = QFileDialog.getSaveFileName(self.main_window, '保存 CSV 文件', '', 'CSV files(*.csv)')

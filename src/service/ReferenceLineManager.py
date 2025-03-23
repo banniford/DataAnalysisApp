@@ -11,7 +11,8 @@ class ReferenceLineManager:
                  y_value:list, 
                  left_Zone:int, 
                  right_Zone:int,
-                 update_lines_table:Callable):
+                 update_lines:Callable,
+                 update_table:Callable):
         self.name = name
         self.canvas = canvas
         self.ax = canvas.ax_right
@@ -26,7 +27,9 @@ class ReferenceLineManager:
         self.current_index = None  # 用来标记当前选中的参考线的索引
         self.left_Zone = left_Zone
         self.right_Zone = right_Zone
-        self.update_lines_table = update_lines_table
+        self.update_lines = update_lines
+        self.update_table = update_table
+        self._visible = True
 
         # 绑定事件
         self.cid_press = self.canvas.mpl_connect('button_press_event', self.on_press)
@@ -44,6 +47,33 @@ class ReferenceLineManager:
         """设置 jumps 值并自动调用更新函数"""
         self._jumps = value
         self.update_stable_interval()  # 当 jumps 更新时，自动调用更新函数
+
+    @property
+    def visible(self):
+        """获取 visible 值"""
+        return self._visible
+    
+    @visible.setter
+    def visible(self, value):
+        """设置 visible 值并自动调用更新函数"""
+        self._visible = value
+        if self._visible:
+            for line in self.t_lines:
+                line.set_visible(True)
+            for line in self.ft_lines:
+                line.set_visible(True)
+            for line in self.bt_lines:
+                line.set_visible(True)
+            self.update_lines(self.stable_interval) # 通知折线管理器，更新折线
+            self.update_table(self.stable_interval) # 通知更新表格,表格更新
+        else:
+            for line in self.t_lines:
+                line.set_visible(False)
+            for line in self.ft_lines:
+                line.set_visible(False)
+            for line in self.bt_lines:
+                line.set_visible(False)
+            self.update_lines([]) # 通知折线管理器,表格更新
 
     def set_jumps(self, jumps):
         """手动设置 jumps
@@ -121,7 +151,8 @@ class ReferenceLineManager:
 
         # print(self.stable_interval)
         # 通知折线管理器,表格更新
-        self.update_lines_table(self.stable_interval)
+        self.update_lines(self.stable_interval) # 通知折线管理器，更新折线
+        self.update_table(self.stable_interval) # 通知更新表格,表格更新
 
 
 

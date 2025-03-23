@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import QAbstractItemView, QHeaderView, QAbstractScrollArea,
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeySequence
 from service.DataAnalysis import DataAnalysis
-import numpy as np
 
 class ReportTable:
     def __init__(self, main_window,data_analysis:DataAnalysis):
@@ -103,28 +102,37 @@ class ReportTable:
         menu.exec(self.table.viewport().mapToGlobal(position))
 
     def copy_selection(self):
-        """复制选中内容到剪贴板"""
+        """复制选中内容到剪贴板，包括表头"""
         try:
             selected_ranges = self.table.selectedRanges()
             if not selected_ranges:
                 return
 
             copied_data = []
+
             for selection in selected_ranges:
-                rows = []
+                # 提取列头
+                header_row = []
+                for col in range(selection.leftColumn(), selection.rightColumn() + 1):
+                    header_item = self.table.horizontalHeaderItem(col)
+                    header_row.append(header_item.text() if header_item else "")
+                copied_data.append("\t".join(header_row))  # 第一行：列名
+
+                # 提取单元格数据
                 for row in range(selection.topRow(), selection.bottomRow() + 1):
-                    columns = []
+                    row_data = []
                     for col in range(selection.leftColumn(), selection.rightColumn() + 1):
                         item = self.table.item(row, col)
-                        columns.append(item.text() if item else "")
-                    rows.append("\t".join(columns))
-                copied_data.append("\n".join(rows))
+                        row_data.append(item.text() if item else "")
+                    copied_data.append("\t".join(row_data))
 
+            # 设置到剪贴板
             clipboard = QApplication.clipboard()
             clipboard.setText("\n".join(copied_data))
 
         except Exception as e:
             QMessageBox.critical(None, "复制失败", f"错误: {str(e)}")
+
 
     def keyPressEvent(self, event):
         """监听 Ctrl+C 复制"""

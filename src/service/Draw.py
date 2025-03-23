@@ -31,6 +31,8 @@ class Draw:
         self.main_ui.doubleSpinBox_2.valueChanged.connect(self.update_slider_threshold)
         self.main_ui.doubleSpinBox_3.valueChanged.connect(self.update_slider_threshold)
         self.main_ui.spinBox_3.valueChanged.connect(lambda val: self.update_jumps())
+        # Matplotlib 自动计算比较合适的边距和间隔。
+        self.canvas.fig.tight_layout()
 
     def reset(self):
         # 绘制新的数据
@@ -42,25 +44,45 @@ class Draw:
         self.reference_line_manager = {}
         self.line_manager = {}
         self.scatter_manager = {}
-        # 添加表头
-        self.canvas.ax_left.set_title("数据分析(点击拖动参考线，按D删除，按C清空，按A添加)")
+        self.scatter_visible = True
+        # 添加title和label
+        self.canvas.ax_left.set_title("数据分析(点击拖动参考线，按D删除，按C清空，按A添加)",
+                                      pad=12)  # 向上移动标题（单位是 points，默认是 6）
         self.canvas.ax_left.set_xlabel("数据点位")
         # 增加背景网格
         self.canvas.ax_left.grid(True, linestyle='-', alpha=0.8)
         self.canvas.ax_right.grid(False)
         # 左侧坐标轴在最上层
         # self.canvas.ax_left.set_zorder(1)
+        # 清空表格
+        self.report_table.clear_all_columns()
         # Matplotlib 自动计算比较合适的边距和间隔。
         self.canvas.fig.tight_layout()
-        # 清空表格
-        self.report_table.clear_all_rows()
     
     def set_scatter_visible(self):
         """设置散点图可见"""
-        for scatter in self.scatter_manager.values():
-            scatter.set_visible(False)
-        self.scatter_visible = False
+        if self.scatter_visible:
+            for scatter in self.scatter_manager.values():
+                scatter.set_visible(False)
+            self.scatter_visible = False
+        else:
+            for scatter in self.scatter_manager.values():
+                scatter.set_visible(True)
+            self.scatter_visible = True
         self.canvas.draw_idle()
+
+    def set_reference_line_visible(self):
+        """设置参考线可见"""
+        master_var = self.main_ui.comboBox2_3.currentText()
+        if not master_var:
+            return
+        reference_line_manager = self.reference_line_manager.get(master_var)
+        if reference_line_manager:
+            if reference_line_manager.visible:
+                reference_line_manager.visible = False
+            else:
+                reference_line_manager.visible = True
+            self.canvas.draw_idle()
     
     def create_line_manager(self, label, y_value, color,ax)->LineManager:
         """创建折线管理器"""
@@ -80,14 +102,15 @@ class Draw:
                                                                      y_value, 
                                                                      left_Zone, 
                                                                      right_Zone, 
-                                                                     self.update_lines_table)
+                                                                     self.update_lines,
+                                                                     self.update_table)
             self.main_ui.spinBox_1.valueChanged.connect(lambda val: self.reference_line_manager[name].update_left_zone(val))
             self.main_ui.spinBox_2.valueChanged.connect(lambda val: self.reference_line_manager[name].update_right_zone(val))
         return self.reference_line_manager[name]
     
     def add_threshold_slider(self, initial_threshold,max_threshold):
         """添加阈值调整滑块"""
-        ax_slider = self.canvas.fig.add_axes([0.2, 0.01, 0.6, 0.02], facecolor='lightgoldenrodyellow')
+        ax_slider = self.canvas.fig.add_axes([0.2, 0.003, 0.6, 0.01], facecolor='lightgoldenrodyellow')
         slider = Slider(ax_slider, '突变识别阈值', 0.0, max_threshold, valinit=initial_threshold)
         return slider
     
@@ -142,10 +165,7 @@ class Draw:
         self.draw_reference_line(master_var,jumps)
         self.canvas.draw_idle()
 
-    def update_lines_table(self,stable_interval):
-        """更新折线_表格
-            计算平均值和最大最小值
-        """
+    def update_lines(self,stable_interval):
         # 创建折线管理器
         v = self.data_analysis.get_var_value(self.main_ui.comboBox2_3.currentText())
         line_manager = self.create_line_manager(self.main_ui.comboBox2_3.currentText(),
@@ -157,8 +177,8 @@ class Draw:
         
         for var in self.main_window.slave_var:
             self._line(var, stable_interval,self.canvas.ax_right)
-        
-        
+
+    def update_table(self,stable_interval):
         # 设置稳定区间
         self.data_analysis.set_stable_interval(self.main_ui.comboBox2_3.currentText(), stable_interval)
         cal_list = copy.deepcopy(self.main_window.slave_var)

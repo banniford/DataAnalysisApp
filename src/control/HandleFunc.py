@@ -28,6 +28,9 @@ class MainWindow(QMainWindow):
         self.main_ui.action_1.triggered.connect(self.file_manager.saveCSVFile)
         self.main_ui.action_2.triggered.connect(self.open_folder_csv)
         self.main_ui.action_3.triggered.connect(self.draw.set_scatter_visible)
+        self.main_ui.action_4.triggered.connect(self.draw.set_reference_line_visible)
+
+
 
         self.main_ui.doubleSpinBox_1.valueChanged.connect(self.on_doubleSpinBox_1_valueChanged)
         self.main_ui.checkBox_3.stateChanged.connect(self.changeDeltT)
