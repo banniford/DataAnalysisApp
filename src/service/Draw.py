@@ -8,6 +8,7 @@ from service.LineManager import LineManager
 from matplotlib.ticker import FuncFormatter
 from service.ReportTable import ReportTable
 from service.DataAnalysis import DataAnalysis
+from service.ScatterManager import ScatterManager
 import copy,random
 
 class Draw:
@@ -82,11 +83,11 @@ class Draw:
         """设置散点图可见"""
         if self.scatter_visible:
             for scatter in self.scatter_manager.values():
-                scatter.set_visible(False)
+                scatter.visible=False
             self.scatter_visible = False
         else:
             for scatter in self.scatter_manager.values():
-                scatter.set_visible(True)
+                scatter.visible= True
             self.scatter_visible = True
         self.canvas.draw_idle()
 
@@ -126,6 +127,12 @@ class Draw:
             self.main_ui.spinBox_1.valueChanged.connect(lambda val: self.reference_line_manager[name].update_left_zone(val))
             self.main_ui.spinBox_2.valueChanged.connect(lambda val: self.reference_line_manager[name].update_right_zone(val))
         return self.reference_line_manager[name]
+    
+    def create_scatter_manager(self, label, ax, y_value, color='gray'):
+        """创建散点图管理器"""
+        if label not in self.scatter_manager:
+            self.scatter_manager[label] = ScatterManager(ax, y_value, color)
+        return self.scatter_manager[label]
     
     def add_threshold_slider(self, initial_threshold,max_threshold):
         """添加阈值调整滑块"""
@@ -211,56 +218,31 @@ class Draw:
         # 更新表格为当前主变量和从变量
         self.report_table.update_table(cal_list)
 
-    def clear_table(self):    
-        self.report_table.clear_all_rows()
-
     def draw_master(self, master_var):
         """绘制主变量"""
-        v = self.data_analysis.get_var_value(master_var)
         color = self._line(master_var, [],self.canvas.ax_left)
-        self._scatter(master_var, range(len(v)), v,color,ax=self.canvas.ax_left)
-        # 更新ax范围自动适配
-        # self.canvas.ax_left.relim()
-        # self.canvas.ax_left.autoscale_view()
+        self._scatter(master_var,color,self.canvas.ax_left)
+        
 
     def clear_master(self, master_var):
         self.clear_scatter(master_var)
         self.clear_reference_line(master_var)
         self.clear_lines(master_var)
-        self.clear_table()
+        self.report_table.clear_all_rows()
 
     def draw_slave(self, slave_var):
         """绘制从变量"""
-        v = self.data_analysis.get_var_value(slave_var)
         color = self._line(slave_var, [],self.canvas.ax_right)
-        self._scatter(slave_var, range(len(v)), v,color,ax=self.canvas.ax_right)
-        # 更新ax范围自动适配
-        # self.canvas.ax_right.relim()
-        # self.canvas.ax_right.autoscale_view()
+        self._scatter(slave_var,color,self.canvas.ax_right)
 
     def clear_slave(self, slave_var):
         self.clear_scatter(slave_var)
         self.clear_lines(slave_var)
 
-    def _scatter(self, label, x ,y ,color='gray', linestyle='--',linewidth=1, alpha=0.3, picker=5,ax = None):
+    def _scatter(self, label,color,ax = None):
         """添加散点图"""
-        if label in self.scatter_manager:
-            return 
-        scatter= ax.scatter(x, 
-                                             y,
-                                             color=color, linestyle=linestyle, 
-                                             linewidth=linewidth,
-                                             alpha=alpha, 
-                                             picker=picker,
-                                             edgecolors='none',  # 关闭边缘
-                                             rasterized=True     # 启用栅格化
-                                             )
-        # 添加鼠标悬停显示数据点数值的功能
-        mplcursors.cursor(scatter, hover=2).connect(
-            "add", lambda sel: sel.annotation.set_text(
-                f"({int(sel.target[0])}, {sel.target[1]:.2f})"
-            )
-        )
+        v = self.data_analysis.get_var_value(label)
+        scatter = self.create_scatter_manager(label, ax, v, color)
         # 更新图例
         self.canvas.ax_left.legend(loc = "upper left")
         self.canvas.ax_right.legend(loc = "upper right")
@@ -300,7 +282,7 @@ class Draw:
     def clear_scatter(self, label):
         scatter = self.scatter_manager.get(label)
         if scatter:
-            scatter.remove()
+            scatter.clear_scatter()
             del self.scatter_manager[label]
             # 更新图例
             self.canvas.ax_left.legend(loc = "upper left")

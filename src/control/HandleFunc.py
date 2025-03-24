@@ -252,11 +252,12 @@ class MainWindow(QMainWindow):
         if line is None:
             return
         line.color = self.draw.color_map[self.main_ui.comboBox2_5.currentText()]
-        # 清除主变量散点
-        self.draw.clear_scatter(master_var)
-        # 重新绘制主变量散点
-        v = self.draw.data_analysis.get_var_value(master_var)
-        self.draw._scatter(master_var, range(len(v)), v,self.draw.color_map[self.main_ui.comboBox2_5.currentText()],ax=self.draw.canvas.ax_left)
+
+        # 修改主变量的散点颜色
+        scatter = self.draw.scatter_manager.get(master_var)
+        if scatter is None:
+            return
+        scatter.color = self.draw.color_map[self.main_ui.comboBox2_5.currentText()]
 
     def update_comBobox_right_ylim(self):
         '''
@@ -285,11 +286,11 @@ class MainWindow(QMainWindow):
         if line is None:
             return
         line.color = self.draw.color_map[self.main_ui.comboBox2_6.currentText()]
-        # 清除从变量散点
-        self.draw.clear_scatter(slave_var)
-        # 重新绘制从变量散点
-        v = self.draw.data_analysis.get_var_value(slave_var)
-        self.draw._scatter(slave_var, range(len(v)), v,self.draw.color_map[self.main_ui.comboBox2_6.currentText()],ax=self.draw.canvas.ax_right)
+        # 修改从变量的散点颜色
+        scatter = self.draw.scatter_manager.get(slave_var)
+        if scatter is None:
+            return
+        scatter.color = self.draw.color_map[self.main_ui.comboBox2_6.currentText()]
 
     def update_master(self, master_var:list):
         '''
