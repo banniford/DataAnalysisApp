@@ -56,7 +56,7 @@ class ReportTable:
                     self.table_data[i] = {"avg": [], "max_min": []}
         
             # 平均数根据小数点精度进行四舍五入
-            self.table_data[i]["avg"] = [round(val, self.precision) for val in self.data_analysis.data_avg[i]]
+            self.table_data[i]["avg"] = [format(round(val, self.precision),f'.{self.precision}f') for val in self.data_analysis.data_avg[i]]
             self.table_data[i]["max_min"] = self.data_analysis.data_max_min[i]
         # 清空表格
         self.clear_all_columns()
@@ -79,11 +79,11 @@ class ReportTable:
              # 添加第四列为主变量最大值索引
             self.add_column(f"{i} 最大值索引", [f"{max_min[1]}" for max_min in self.table_data[i]['max_min']])
             # 添加第五列为最大值,使用round函数保留小数点精度
-            self.add_column(f"{i} 最大值", [round(max_min[0], self.precision) for max_min in self.table_data[i]['max_min']])
+            self.add_column(f"{i} 最大值", [format(round(max_min[0], self.precision),f'.{self.precision}f') for max_min in self.table_data[i]['max_min']])
            # 添加第六列为最小值索引
             self.add_column(f"{i} 最小值索引", [f"{max_min[3]}" for max_min in self.table_data[i]['max_min']])
             # 添加第七列为最小值
-            self.add_column(f"{i} 最小值", [round(max_min[2], self.precision) for max_min in self.table_data[i]['max_min']])
+            self.add_column(f"{i} 最小值", [format(round(max_min[2], self.precision),f'.{self.precision}f') for max_min in self.table_data[i]['max_min']])
 
     def update_csv_table(self, table_data:dict):
         """更新表格数据"""
@@ -91,7 +91,7 @@ class ReportTable:
         for key,value in table_data.items():
             # 检查列表是否为数值列表，如果是则保留小数点精度
             if all(isinstance(val, (float)) for val in value):
-                value = [round(val, self.precision) for val in value]
+                value = [format(round(val, self.precision),f'.{self.precision}f') for val in value]
             self.add_column(key, value)
 
     def show_context_menu(self, position):

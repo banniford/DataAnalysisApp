@@ -47,7 +47,7 @@ class MplCanvas(FigureCanvas):
 
     def _add_text_watermark(self):
         """在背景添加平铺文字水印"""
-        text = "intertek"
+        text = "Intertek"
         fontsize = 20  # 减小字体大小以便排列
         alpha = 0.15
         rotation = 30

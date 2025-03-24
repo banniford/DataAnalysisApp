@@ -7,6 +7,7 @@ from PyQt6.QtGui import QFont
 class CheckableComboBox(QComboBox):
     def __init__(self, parent=None):
         super(CheckableComboBox, self).__init__(parent)
+        self.checked_order = []  # +++ 新增：记录点击顺序 +++
         
         # 创建只读的 QLineEdit 作为下拉框的编辑框
         self.setLineEdit(QLineEdit())
@@ -21,8 +22,6 @@ class CheckableComboBox(QComboBox):
         
         # 变量用于控制全选和取消全选状态（1 代表全选，0 代表取消全选）
         # self.SelectAllStatus = 1
-
-        
 
     def addCheckableItem(self, text):
         """ 添加一个可勾选的选项 """
@@ -45,13 +44,13 @@ class CheckableComboBox(QComboBox):
         return item.checkState() == Qt.CheckState.Checked
 
     def checkedItems(self):
-        """ 获取所有被勾选的选项文本 """
-        return [self.itemText(i) for i in range(self.count()) if self.ifChecked(i)]
+        """ 获取所有被勾选的选项文本（按点击顺序） """
+        return self.checked_order.copy()  # +++ 返回点击顺序副本 +++
 
     def checkedItemsStr(self):
         """ 返回所有被勾选的选项文本，去掉'全选'并用分号拼接 """
         # return ';'.join(self.checkedItems()).strip('全选').strip(';')
-        return ';'.join(self.checkedItems())
+        return ';'.join(self.checked_order)  # +++ 直接使用顺序列表 +++
 
     def showPopup(self):
         """ 展示下拉框时调整其尺寸 """
@@ -61,14 +60,18 @@ class CheckableComboBox(QComboBox):
 
     def selectItemAction(self, index):
         """ 当用户点击选项时的处理逻辑 """
-        # if index.row() == 0:  # 如果点击的是“全选”
-        #     for i in range(self.model().rowCount()):
-        #         if self.SelectAllStatus:
-        #             self.model().item(i).setCheckState(Qt.CheckState.Checked)  # 全选
-        #         else:
-        #             self.model().item(i).setCheckState(Qt.CheckState.Unchecked)  # 取消全选
-        #     self.SelectAllStatus = (self.SelectAllStatus + 1) % 2  # 切换状态
-
+        item = self.model().item(index.row(), 0)
+        text = item.text()
+        state = item.checkState()
+        
+        # +++ 根据勾选状态更新顺序列表 +++
+        if state == Qt.CheckState.Checked:
+            if text not in self.checked_order:
+                self.checked_order.append(text)
+        else:
+            if text in self.checked_order:
+                self.checked_order.remove(text)
+        
         # 更新显示的选中项
         self.lineEdit().clear()
         self.lineEdit().setText(self.checkedItemsStr())
@@ -76,6 +79,7 @@ class CheckableComboBox(QComboBox):
     def clear(self) -> None:
         """ 清空下拉框选项并重新添加 '全选' 选项 """
         super().clear()
+        self.checked_order.clear()  # +++ 清空顺序列表 +++
         # self.addCheckableItem('全选')
 
     def remove_diff(self, text: list):
@@ -84,34 +88,35 @@ class CheckableComboBox(QComboBox):
             index = self.findText(i)
             if index != -1:
                 self.removeItem(index)
+                if i in self.checked_order:  # +++ 同步移除顺序列表项 +++
+                    self.checked_order.remove(i)
 
     def select_all(self):
         """ 选中所有选项 """
         for i in range(self.model().rowCount()):
-            self.model().item(i).setCheckState(Qt.CheckState.Checked)
+            item = self.model().item(i, 0)
+            if item.checkState() != Qt.CheckState.Checked:  # +++ 仅处理未选中项 +++
+                item.setCheckState(Qt.CheckState.Checked)
+                text = item.text()
+                if text not in self.checked_order:  # +++ 避免重复添加 +++
+                    self.checked_order.append(text)
         self.lineEdit().setText(self.checkedItemsStr())
 
-
-# 创建主窗口类
+# 创建主窗口类（保持不变）
 class Ui_Study(QMainWindow):
     def __init__(self):
         super().__init__()
-        
-        # 设置窗口大小
         self.resize(500, 500)
         self.setMinimumSize(500, 500)
         
-        # 创建 CheckableComboBox 组件（多选下拉框）
         self.combobox = CheckableComboBox(self)
-        self.combobox.move(20, 20)  # 设置组件位置
-        self.combobox.resize(200, 30)  # 设置组件大小
+        self.combobox.move(20, 20)
+        self.combobox.resize(200, 30)
         
-        # 创建 QLineEdit 组件（文本输入框）
         self.line_edit = QLineEdit(self)
         self.line_edit.move(20, 80)
         self.line_edit.resize(300, 30)
         
-        # 添加测试数据
         self.combobox.addCheckableItems(['test', 'test1', 'test2'])
         
         # 默认不选中任何选项
@@ -125,13 +130,7 @@ class Ui_Study(QMainWindow):
         # 显示窗口
         self.show()
 
-
 if __name__ == '__main__':
-    # 创建应用实例
     app = QApplication(sys.argv)
-    
-    # 创建主窗口实例
     my_ui = Ui_Study()
-    
-    # 运行应用
     sys.exit(app.exec())
