@@ -8,8 +8,7 @@ from service.LineManager import LineManager
 from matplotlib.ticker import FuncFormatter
 from service.ReportTable import ReportTable
 from service.DataAnalysis import DataAnalysis
-import copy
-import random
+import copy,random
 
 class Draw:
     def __init__(self, main_window: QMainWindow):
@@ -17,6 +16,26 @@ class Draw:
         self.main_ui = main_window.main_ui
         self.data_analysis = DataAnalysis(self)
         self.report_table = ReportTable(main_window,self.data_analysis)
+
+        self.color_map = {
+            "红色": "red",
+            "蓝色": "blue",
+            "绿色": "green",
+            "黄色": "yellow",
+            "青色": "cyan",
+            "品红": "magenta",
+            "紫色": "purple",
+            "橙色": "orange",
+            "黑色": "black",
+            "棕色": "brown",
+            "金色": "gold",
+            "天蓝": "skyblue",
+            "深蓝": "navy",
+            "橄榄绿": "olive",
+            "桃红": "hotpink",
+            "紫罗兰": "violet",
+            "黄绿色": "lime"
+        }
         
         # 获取 MplWidget 对象
         self.mpl_widget = self.main_window.findChild(MplWidget, "mplWidget")  # "mplWidget" 是你在 Qt Designer 中设置的 objectName
@@ -254,29 +273,13 @@ class Draw:
         """添加一条折线"""
         # 创建折线管理器
         # 颜色列表，除了红色，蓝色的其他随机颜色
-        color = ["green", "yellow","cyan","magenta", "purple", "orange"]
-        cur_color = "red"
+        color_name = random.choice(list(self.color_map.keys()))
+        cur_color = self.color_map[color_name]
         v = self.data_analysis.get_var_value(label)
-        if label in self.main_window.master_var:
-            if label == self.main_ui.comboBox2_3.currentText():
-                line_manager = self.create_line_manager(label,
-                                                        v,
-                                                        "red",ax)
-                cur_color = "red"
-            else:
-                line_manager = self.create_line_manager(label,
-                                                        v,
-                                                        "blue",
-                                                        ax)
-                cur_color = "blue"
-        else:
-            # 随机选择颜色,保留列表内容
-            random_color = random.choice(color)
-            line_manager = self.create_line_manager(label,
-                                                    v,
-                                                    random_color,
-                                                    ax)
-            cur_color = random_color
+        line_manager = self.create_line_manager(label,
+                                                v,
+                                                cur_color,
+                                                ax)
         # 设置稳定区间
         line_manager.stable_interval = stable_interval
         return cur_color

@@ -7,7 +7,23 @@ class LineManager:
         self.y_value = y_value
         self.lines = []  # 存储所有折线对象
         self._stable_interval = []  # 稳定区间
-        self.color = color
+        self._color = color
+
+    @property
+    def color(self):
+        return self._color
+    
+    @color.setter
+    def color(self, value):
+        if value == self._color:
+            return
+        self._color = value
+        self.clear_lines()
+        if self._stable_interval==[]:
+            self.add_line(range(len(self.y_value)), self.y_value, color=self._color,linewidth=1)
+            return
+        for i in self._stable_interval:
+            self.add_line(range(i[0],i[1]), self.y_value[i[0]:i[1]], color=self._color,linewidth=1)
 
 
     @property
@@ -22,10 +38,10 @@ class LineManager:
         self.clear_lines()
         # 重新绘制稳定区间
         if self._stable_interval==[]:
-            self.add_line(range(len(self.y_value)), self.y_value, color=self.color,linewidth=1)
+            self.add_line(range(len(self.y_value)), self.y_value, color=self._color,linewidth=1)
             return
         for i in self._stable_interval:
-            self.add_line(range(i[0],i[1]), self.y_value[i[0]:i[1]], color=self.color,linewidth=1)
+            self.add_line(range(i[0],i[1]), self.y_value[i[0]:i[1]], color=self._color,linewidth=1)
 
     
 

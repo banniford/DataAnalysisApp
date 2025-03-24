@@ -23,6 +23,8 @@ class FileManager:
     def clear(self):
         self.main_ui.comboBox2_1.clear()
         self.main_ui.comboBox2_2.clear()
+        self.main_ui.comboBox2_5.setCurrentIndex(-1)
+        self.main_ui.comboBox2_6.setCurrentIndex(-1)
         self.main_window.master_var = []
         self.main_window.slave_var = []
         self.main_window.draw.reset()

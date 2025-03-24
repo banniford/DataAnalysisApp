@@ -38,10 +38,50 @@ class MainWindow(QMainWindow):
         self.main_ui.comboBox2_2.currentTextChanged.connect(self.checkAbleComboBoxRight)
         self.main_ui.comboBox2_3.currentTextChanged.connect(self.update_comBobox_left_ylim)
         self.main_ui.comboBox2_4.currentTextChanged.connect(self.update_comBobox_right_ylim)
+        self.main_ui.comboBox2_5.currentTextChanged.connect(self.update_comBobox_left_color)
+        self.main_ui.comboBox2_6.currentTextChanged.connect(self.update_comBobox_right_color)
+        self.init_comboBox()
 
         self.main_ui.spinBox_4.valueChanged.connect(lambda val: self.draw.report_table.update_precision(val))
 
-    
+    def init_comboBox(self):
+        # 设置下拉框样式, 使其不显示下拉箭头
+        self.main_ui.comboBox2_3.setStyleSheet("QComboBox {combobox-popup: 0;}")
+        # 设置下拉框最大显示条目数
+        self.main_ui.comboBox2_3.setMaxVisibleItems(5)
+        # 设置下拉框滚动条显示策略
+        self.main_ui.comboBox2_3.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+
+        # 设置下拉框样式, 使其不显示下拉箭头
+        self.main_ui.comboBox2_4.setStyleSheet("QComboBox {combobox-popup: 0;}")
+        # 设置 下拉框最大显示条目数 
+        self.main_ui.comboBox2_4.setMaxVisibleItems(5)
+        # 设置下拉框滚动条显示策略
+        self.main_ui.comboBox2_4.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded) 
+
+        # 设置下拉框样式, 使其不显示下拉箭头
+        self.main_ui.comboBox2_5.setStyleSheet("QComboBox {combobox-popup: 0;}")
+        # 设置 下拉框最大显示条目数 
+        self.main_ui.comboBox2_5.setMaxVisibleItems(5)
+        # 设置下拉框滚动条显示策略
+        self.main_ui.comboBox2_5.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded) 
+        self.main_ui.comboBox2_5.addItems(self.draw.color_map.keys())
+        # 设置索引为-1
+        self.main_ui.comboBox2_5.setCurrentIndex(-1)
+
+        # 设置下拉框样式, 使其不显示下拉箭头
+        self.main_ui.comboBox2_6.setStyleSheet("QComboBox {combobox-popup: 0;}")
+        # 设置 下拉框最大显示条目数
+        self.main_ui.comboBox2_6.setMaxVisibleItems(5)
+        # 设置下拉框滚动条显示策略
+        self.main_ui.comboBox2_6.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.main_ui.comboBox2_6.addItems(self.draw.color_map.keys())
+        # 设置索引为-1
+        self.main_ui.comboBox2_6.setCurrentIndex(-1)
+
+
+
+
     def open_folder_csv(self):
         """打开子窗口，并确保它在主窗口之上"""
         self.folder = Folder()
@@ -161,38 +201,29 @@ class MainWindow(QMainWindow):
         items = self.main_ui.comboBox2_1.checkedItems()
         # if "全选" in items:
         #     items.remove("全选")
+        self.update_master(items)
         # 设置主变量
         # 获取之前的主变量
         text = self.main_ui.comboBox2_3.currentText()
         # 清除主变量
         self.main_ui.comboBox2_3.clear()
+        self.main_ui.comboBox2_3.showPopup()
         self.main_ui.comboBox2_3.addItems(items)
         # 设置之前的主变量
         if text in items:
             self.main_ui.comboBox2_3.setCurrentIndex(items.index(text))
-        # 设置下拉框样式, 使其不显示下拉箭头
-        self.main_ui.comboBox2_3.setStyleSheet("QComboBox {combobox-popup: 0;}")
-        # 设置下拉框最大显示条目数
-        self.main_ui.comboBox2_3.setMaxVisibleItems(5)
-        # 设置下拉框滚动条显示策略
-        self.main_ui.comboBox2_3.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.update_master(items)
+        
     
     def checkAbleComboBoxRight(self):
         items = self.main_ui.comboBox2_2.checkedItems()
         # if "全选" in items:
         #     items.remove("全选")
+        self.update_slave(items)  
         # 设置从变量
         self.main_ui.comboBox2_4.clear()
         self.main_ui.comboBox2_4.showPopup()
         self.main_ui.comboBox2_4.addItems(items)
-        # 设置下拉框样式, 使其不显示下拉箭头
-        self.main_ui.comboBox2_4.setStyleSheet("QComboBox {combobox-popup: 0;}")
-        # 设置 下拉框最大显示条目数 
-        self.main_ui.comboBox2_4.setMaxVisibleItems(5)
-        # 设置下拉框滚动条显示策略
-        self.main_ui.comboBox2_4.view().setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded) 
-        self.update_slave(items)  
+        
         
     def update_comBobox_left_ylim(self):
         '''
@@ -202,7 +233,30 @@ class MainWindow(QMainWindow):
             return
         # 更新左侧y轴范围
         self.draw.update_left_ylim()
-        
+        # 更新左侧y轴颜色
+        master_var = self.main_ui.comboBox2_3.currentText()
+        cur_color = self.draw.line_manager[master_var].color
+        reverse_map = {v: k for k, v in self.draw.color_map.items()}
+        # 设置颜色,查找颜色对应的索引
+        self.main_ui.comboBox2_5.setCurrentIndex(self.main_ui.comboBox2_5.findText(reverse_map[cur_color]))
+
+    def update_comBobox_left_color(self):
+        '''
+        更新左侧y轴颜色
+        '''
+        if self.main_ui.comboBox2_3.currentText() == "":
+            return
+        # 更新左侧y轴颜色
+        master_var = self.main_ui.comboBox2_3.currentText()
+        line = self.draw.line_manager.get(master_var)
+        if line is None:
+            return
+        line.color = self.draw.color_map[self.main_ui.comboBox2_5.currentText()]
+        # 清除主变量散点
+        self.draw.clear_scatter(master_var)
+        # 重新绘制主变量散点
+        v = self.draw.data_analysis.get_var_value(master_var)
+        self.draw._scatter(master_var, range(len(v)), v,self.draw.color_map[self.main_ui.comboBox2_5.currentText()],ax=self.draw.canvas.ax_left)
 
     def update_comBobox_right_ylim(self):
         '''
@@ -212,6 +266,30 @@ class MainWindow(QMainWindow):
             return
         # 更新右侧y轴范围
         self.draw.update_right_ylim()
+        # 更新右侧y轴颜色
+        slave_var = self.main_ui.comboBox2_4.currentText()
+        cur_color = self.draw.line_manager[slave_var].color
+        reverse_map = {v: k for k, v in self.draw.color_map.items()}
+        # 设置颜色,查找颜色对应的索引
+        self.main_ui.comboBox2_6.setCurrentIndex(self.main_ui.comboBox2_6.findText(reverse_map[cur_color]))
+
+    def update_comBobox_right_color(self):
+        '''
+        更新右侧y轴颜色
+        '''
+        if self.main_ui.comboBox2_4.currentText() == "":
+            return
+        # 更新右侧y轴颜色
+        slave_var = self.main_ui.comboBox2_4.currentText()
+        line = self.draw.line_manager.get(slave_var)
+        if line is None:
+            return
+        line.color = self.draw.color_map[self.main_ui.comboBox2_6.currentText()]
+        # 清除从变量散点
+        self.draw.clear_scatter(slave_var)
+        # 重新绘制从变量散点
+        v = self.draw.data_analysis.get_var_value(slave_var)
+        self.draw._scatter(slave_var, range(len(v)), v,self.draw.color_map[self.main_ui.comboBox2_6.currentText()],ax=self.draw.canvas.ax_right)
 
     def update_master(self, master_var:list):
         '''
