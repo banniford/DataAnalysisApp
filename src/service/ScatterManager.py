@@ -146,10 +146,10 @@ class ScatterManager:
         
         # 计算斜率（处理除零情况）
         slope = float('inf') if x2 == x1 else (y2 - y1) / (x2 - x1)
-        print(i1,i2)
-        print(x1,x2)
-        print(y1,y2)
-        print(slope)
+        # print(i1,i2)
+        # print(x1,x2)
+        # print(y1,y2)
+        # print(slope)
         # 创建直线和文本
         line = self._create_line(i1, i2,y1, y2)
         text = self._create_slope_text(i1, i2,x1,x2,y1, y2, slope)
@@ -242,8 +242,8 @@ class ScatterManager:
     # region 事件处理
     def _on_pick(self, event: PickEvent):
         """统一处理所有坐标轴的pick事件"""
-        print(event.artist.axes)
-        print(event.artist.axes == self.ax)
+        # print(event.artist.axes)
+        # print(event.artist.axes == self.ax)
         # 处理散点点击
         if event.artist == self.scatter:
             self._handle_scatter_pick(event)

@@ -73,7 +73,7 @@ class Draw:
         self.canvas.ax_left.grid(True, linestyle='-', alpha=0.8)
         self.canvas.ax_right.grid(False)
         # 左侧坐标轴在最上层
-        # self.canvas.ax_left.set_zorder(1)
+        self.canvas.ax_left.set_zorder(1)
         # 清空表格
         self.report_table.clear_all_columns()
         # Matplotlib 自动计算比较合适的边距和间隔。
