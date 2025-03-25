@@ -18,12 +18,15 @@ class LineManager:
         if value == self._color:
             return
         self._color = value
-        self.clear_lines()
-        if self._stable_interval==[]:
-            self.add_line(range(len(self.y_value)), self.y_value, color=self._color,linewidth=1)
-            return
-        for i in self._stable_interval:
-            self.add_line(range(i[0],i[1]), self.y_value[i[0]:i[1]], color=self._color,linewidth=1)
+        # self.clear_lines()
+        # if self._stable_interval==[]:
+        #     self.add_line(range(len(self.y_value)), self.y_value, color=self._color,linewidth=1)
+        #     return
+        # for i in self._stable_interval:
+        #     self.add_line(range(i[0],i[1]), self.y_value[i[0]:i[1]], color=self._color,linewidth=1)
+        for i in self.lines:
+            i.set_color(self._color)
+        self.ax.figure.canvas.draw_idle()
 
 
     @property

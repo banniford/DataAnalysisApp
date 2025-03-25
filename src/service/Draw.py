@@ -131,7 +131,7 @@ class Draw:
     def create_scatter_manager(self, label, ax, y_value, color='gray'):
         """创建散点图管理器"""
         if label not in self.scatter_manager:
-            self.scatter_manager[label] = ScatterManager(ax, y_value, color)
+            self.scatter_manager[label] = ScatterManager(label,ax, y_value, color)
         return self.scatter_manager[label]
     
     def add_threshold_slider(self, initial_threshold,max_threshold):

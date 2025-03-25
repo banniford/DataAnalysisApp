@@ -186,6 +186,9 @@ class MainWindow(QMainWindow):
         if self.main_ui.checkBox_3.isChecked():
             self.main_ui.doubleSpinBox_1.setEnabled(False)
             self.draw.update_x_formatter(self._scaled_index_formatter)
+            # 设置所有散点图中斜率的delt_T_set
+            for scatter in self.draw.scatter_manager.values():
+                scatter.delt_T = self.delt_T_set
             # 设置y轴标签，在右下角
             xlabel = self.draw.canvas.ax_left.set_xlabel("T[s]", labelpad=0.1)
             xlabel.set_horizontalalignment("right")
@@ -193,6 +196,9 @@ class MainWindow(QMainWindow):
         else:
             self.main_ui.doubleSpinBox_1.setEnabled(True)
             self.draw.update_x_formatter(self._raw_index_formatter)
+            # 设置所有散点图中斜率的delt_T_set
+            for scatter in self.draw.scatter_manager.values():
+                scatter.delt_T = 1
             # xlabel 设置为空，不显示
             self.draw.canvas.ax_left.set_xlabel("数据点位")
 
