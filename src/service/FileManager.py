@@ -77,7 +77,7 @@ class FileManager:
         # 获取第一个csv文件的表头
         df = self.load_file(os.path.join(self.folder_path, self.csv_files[0]))
         if df is None:
-            self.main_window.msg(f"文件 {self.csv_files[0]} 没有检测到表头，请修改检测阈值")
+            self.main_window.msg(f"文件 {self.csv_files[0]} 未找到稳定的表头行，请修改检测阈值")
             return None
         return df.columns.tolist()
         
@@ -86,9 +86,8 @@ class FileManager:
         header_line_index = self._detect_header_line_by_colcount(folder_path)
         if header_line_index is None:
             # 如果检测不到合适的表头行，你可以选择报错或给个默认值
-            self.main_window.msg("未找到稳定的表头行，请检查文件格式")
             return None
-        self.main_window.msg(f"检测到表头行号：{header_line_index} 行。")
+        self.main_window.msg(f"检测文件{folder_path}到表头行号：{header_line_index} 行。")
         # 2) 用 skiprows 指定要跳过的行，让 pandas 从检测到的那行开始当作表头
         self.df = pd.read_csv(
             folder_path,
