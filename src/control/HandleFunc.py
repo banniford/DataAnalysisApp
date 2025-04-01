@@ -43,6 +43,8 @@ class MainWindow(QMainWindow):
         self.init_comboBox()
 
         self.main_ui.spinBox_4.valueChanged.connect(lambda val: self.draw.report_table.update_precision(val))
+        self.main_ui.pushButton_1.clicked.connect(self.update_left_ylim)
+        self.main_ui.pushButton_2.clicked.connect(self.update_right_ylim)
 
     def init_comboBox(self):
         # 设置下拉框样式, 使其不显示下拉箭头
@@ -249,6 +251,18 @@ class MainWindow(QMainWindow):
         # 设置颜色,查找颜色对应的索引
         self.main_ui.comboBox2_5.setCurrentIndex(self.main_ui.comboBox2_5.findText(reverse_map[cur_color]))
 
+    def update_left_ylim(self):
+        '''
+        更新左侧y轴自定义范围
+        '''
+        y_min = self.main_ui.doubleSpinBox_4.value()
+        y_max = self.main_ui.doubleSpinBox_5.value()
+        self.draw.canvas.ax_left.set_ylim(y_min, y_max)
+        self.draw.canvas.draw_idle()
+
+    
+        
+
     def update_comBobox_left_color(self):
         '''
         更新左侧y轴颜色
@@ -287,6 +301,15 @@ class MainWindow(QMainWindow):
         reverse_map = {v: k for k, v in self.draw.color_map.items()}
         # 设置颜色,查找颜色对应的索引
         self.main_ui.comboBox2_6.setCurrentIndex(self.main_ui.comboBox2_6.findText(reverse_map[cur_color]))
+
+    def update_right_ylim(self):
+        '''
+        更新右侧y轴自定义范围
+        '''
+        y_min = self.main_ui.doubleSpinBox_6.value()
+        y_max = self.main_ui.doubleSpinBox_7.value()
+        self.draw.canvas.ax_right.set_ylim(y_min, y_max)
+        self.draw.canvas.draw_idle()
 
     def update_comBobox_right_color(self):
         '''
