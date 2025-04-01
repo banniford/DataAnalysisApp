@@ -242,6 +242,9 @@ class MainWindow(QMainWindow):
         # 更新左侧y轴颜色
         master_var = self.main_ui.comboBox2_3.currentText()
         cur_color = self.draw.line_manager[master_var].color
+        # 更新图例
+        self.draw.canvas.ax_left.legend(loc = "upper left")
+        
         reverse_map = {v: k for k, v in self.draw.color_map.items()}
         # 设置颜色,查找颜色对应的索引
         self.main_ui.comboBox2_5.setCurrentIndex(self.main_ui.comboBox2_5.findText(reverse_map[cur_color]))
@@ -264,6 +267,8 @@ class MainWindow(QMainWindow):
         if scatter is None:
             return
         scatter.color = self.draw.color_map[self.main_ui.comboBox2_5.currentText()]
+        # 更新图例
+        self.draw.canvas.ax_left.legend(loc = "upper left")
 
     def update_comBobox_right_ylim(self):
         '''
@@ -276,6 +281,9 @@ class MainWindow(QMainWindow):
         # 更新右侧y轴颜色
         slave_var = self.main_ui.comboBox2_4.currentText()
         cur_color = self.draw.line_manager[slave_var].color
+        # 更新图例
+        self.draw.canvas.ax_right.legend(loc = "upper right")
+
         reverse_map = {v: k for k, v in self.draw.color_map.items()}
         # 设置颜色,查找颜色对应的索引
         self.main_ui.comboBox2_6.setCurrentIndex(self.main_ui.comboBox2_6.findText(reverse_map[cur_color]))
@@ -297,6 +305,9 @@ class MainWindow(QMainWindow):
         if scatter is None:
             return
         scatter.color = self.draw.color_map[self.main_ui.comboBox2_6.currentText()]
+        # 更新图例
+        self.draw.canvas.ax_right.legend(loc = "upper right")
+
 
     def update_master(self, master_var:list):
         '''

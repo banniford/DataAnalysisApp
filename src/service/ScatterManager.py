@@ -2,6 +2,7 @@ import mplcursors
 from matplotlib.backend_bases import PickEvent, KeyEvent
 from dataclasses import dataclass
 from typing import List, Tuple, Optional
+import random
 
 @dataclass
 class LineInfo:
@@ -46,6 +47,29 @@ class ScatterManager:
         self.selected_points = []  # 临时存储选中的点索引
         self.selected_line = None  # 当前选中的直线对象
         self._visible = True    # 可见性状态
+
+        self.color_map =[
+             "red",
+             "blue",
+             "green",
+             "yellow",
+             "cyan",
+             "magenta",
+             "purple",
+             "orange",
+             "black",
+             "brown",
+             "gold",
+             "skyblue",
+             "navy",
+             "olive",
+             "hotpink",
+             "violet",
+             "lime"
+        ]
+        self.color_map.remove(self.color)  # 避免与初始颜色冲突
+        self.slope_color = random.choice(self.color_map)  # 随机选择斜率线颜色
+        
         
         self._init_plot()      # 初始化绘图
         self._connect_events() # 连接交互事件
@@ -171,7 +195,7 @@ class ScatterManager:
         """
         return self.ax.plot(
             [i1, i2], [y1, y2], 
-            color=self.color, 
+            color=self.slope_color, 
             linewidth=3,
             picker=5  # 使直线可被选中
         )[0]
@@ -190,8 +214,8 @@ class ScatterManager:
         """
         return self.ax.text(
             (i1 + i2)/2, (y1 + y2)/2,  # 文本位置为两点中点
-            f'{self.label} 点 {x1}-点{x2} 的斜率为: {slope:.2f}', 
-            color=self.color, 
+            f'{self.label} 点 {x1:.2f}-点{x2:.2f} 的斜率为: {slope:.2f}', 
+            color=self.slope_color, 
             fontsize=8,
             ha='center',  # 水平居中
             va='center'   # 垂直居中
@@ -221,9 +245,9 @@ class ScatterManager:
     def _update_colors(self):
         """更新所有元素的颜色"""
         self.scatter.set_color(self.color)
-        for line_info in self.lines:
-            line_info.line.set_color(self.color)
-            line_info.text.set_color(self.color)
+        # for line_info in self.lines:
+        #     line_info.line.set_color(self.color)
+        #     line_info.text.set_color(self.color)
         self.ax.figure.canvas.draw_idle()
 
     def _set_visibility(self, visible: bool):

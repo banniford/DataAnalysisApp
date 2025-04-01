@@ -15,7 +15,7 @@ class ReferenceLineManager:
                  update_table:Callable):
         self.name = name
         self.canvas = canvas
-        self.ax = canvas.ax_left
+        self.ax = canvas.ax_right
         self.xpos_list = xpos_list
         self.y_value = y_value
         self.stable_interval=[]

@@ -295,7 +295,7 @@
      <number>10</number>
     </property>
     <property name="value">
-     <number>20</number>
+     <number>100</number>
     </property>
     <property name="displayIntegerBase">
      <number>10</number>
@@ -352,7 +352,7 @@
      <number>10</number>
     </property>
     <property name="value">
-     <number>20</number>
+     <number>100</number>
     </property>
     <property name="displayIntegerBase">
      <number>10</number>
