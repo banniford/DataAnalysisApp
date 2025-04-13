@@ -1,11 +1,13 @@
 from PyQt6.QtWidgets import QDialog
 from ui.Ui_login import Ui_Dialog
 from datetime import datetime
+from service.ConfigManager import ConfigManager  # 新增导入
 
 class Login(QDialog):
     def __init__(self):
         """登录窗口类"""
         super().__init__()
+        self.config = ConfigManager()  # 新增配置管理器实例
         self.main_ui = Ui_Dialog()
         self.main_ui.setupUi(self)
         self.main_ui.pushButton.clicked.connect(self.authenticate)  # 连接登录按钮事件
@@ -13,6 +15,10 @@ class Login(QDialog):
         self.main_ui.lineEdit_1.setPlaceholderText("请输入用户名")
         self.main_ui.lineEdit_2.setPlaceholderText("请输入密码")  # 设置密码输入框提示文本
         self.main_ui.label_3.setText("")  # 清空提示标签文本
+
+        # 新增：自动填充用户名
+        if session_data := self.config.load_session_data():
+            self.main_ui.lineEdit_1.setText(session_data["username"])
     
 
     def authenticate(self):
@@ -21,10 +27,11 @@ class Login(QDialog):
         password = self.main_ui.lineEdit_2.text().strip()
         # 生成期望密码
         expected_pwd = self.generate_dynamic_password(username)
-        print(f"期望密码: {expected_pwd}")
-        print(f"输入密码: {password}")
+        # print(f"期望密码: {expected_pwd}")
+        # print(f"输入密码: {password}")
 
         if password == expected_pwd:
+            self.config.save_session(username)  # 保存配置
             self.accept()  # 关闭登录对话框
         else:
             self.main_ui.lineEdit_2.clear()
@@ -67,7 +74,6 @@ class Login(QDialog):
             now.month,   # 月
             now.day,     # 日
             now.hour,    # 时
-            now.minute   # 分
         ]
         code = []
         for comp in time_components:

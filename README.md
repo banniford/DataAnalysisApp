@@ -29,5 +29,5 @@ pipreqs . --force
 &emsp;&emsp;使用 pyinstaller 工具打包成 win 可执行文件，以下是打包命令：
 
 ```shell
-pyinstaller --clean -F -w -i assets/image/faviceon.ico --add-data "assets/font;assets/font" --add-data "assets/image;assets/image" --collect-submodules numpy --collect-data numpy --collect-submodules matplotlib --collect-data matplotlib src/app.py
+pyinstaller --clean -F -w -i assets/image/faviceon.ico --add-data "assets/font;assets/font" --add-data "assets/image;assets/image" --collect-submodules numpy --collect-data numpy --collect-submodules matplotlib --collect-data matplotlib src/DataAnalysisApp.py
 ```

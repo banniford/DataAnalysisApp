@@ -2,12 +2,12 @@
 import warnings
 warnings.filterwarnings("ignore")
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QMainWindow,QDialog
+from PyQt6.QtWidgets import QMainWindow,QDialog,QLabel
 from ui.Ui_DataAnalysis import Ui_MainWindow
 from ui.Ui_folder import Ui_Dialog
 from service.FileManager import FileManager
 from service.Draw import Draw
-
+from PyQt6.QtCore import QTimer
 from datetime import datetime
 
 class MainWindow(QMainWindow):
@@ -45,6 +45,55 @@ class MainWindow(QMainWindow):
         self.main_ui.spinBox_4.valueChanged.connect(lambda val: self.draw.report_table.update_precision(val))
         self.main_ui.pushButton_1.clicked.connect(self.update_left_ylim)
         self.main_ui.pushButton_2.clicked.connect(self.update_right_ylim)
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_timer)
+         # 新增：在菜单栏添加倒计时标签
+        self.timer_label = QLabel()
+        self.timer_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.main_ui.menubar.setCornerWidget(self.timer_label)
+
+    def start_session_timer(self, initial_seconds):
+        self.remaining_seconds = initial_seconds
+        self.timer.start(1000)
+        self.update_display()
+        self.low_time_warning = False  # 新增低时间警告标志
+
+    def update_timer(self):
+        self.remaining_seconds -= 1
+        
+        # 触发低时间警告
+        if not self.low_time_warning and self.remaining_seconds <= 3600:
+            self.msg(f"工具使用剩余时间不足 1 小时！")
+            self.low_time_warning = True
+        
+        if self.remaining_seconds <= 10:
+            self.msg(f"使用期限剩余 {self.remaining_seconds} s，系统即将关闭")
+            
+        if self.remaining_seconds <= 0:
+            self.timer.stop()
+            self.close()
+        self.update_display()
+
+    def seconds_to_dhms(self, seconds):
+        """将秒转换为DD:HH:MM:SS格式"""
+        days, seconds = divmod(seconds, 86400)
+        hours, seconds = divmod(seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+        return f"{int(days):02}:{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+
+    def update_display(self):
+        # 转换为标准时间格式
+        time_str = self.seconds_to_dhms(self.remaining_seconds)
+        
+        # 设置不同时间段的颜色
+        if self.remaining_seconds <= 3600:
+            self.timer_label.setStyleSheet("font-family: '黑体'; font-size: 14px; color: red; font-weight: bold;")
+        else:
+            self.timer_label.setStyleSheet("font-family: '黑体'; font-size: 14px; color: #2E86C1; font-weight: bold;")
+        
+        # 更新标签显示
+        self.timer_label.setText(f"有效期剩余：{time_str}")
 
     def init_comboBox(self):
         # 设置下拉框样式, 使其不显示下拉箭头
@@ -89,6 +138,7 @@ class MainWindow(QMainWindow):
         self.folder = Folder()
         self.folder.main_ui.pushButton_1.clicked.connect(self.load_folder)
         self.folder.main_ui.pushButton_2.clicked.connect(self.cal_csv)
+        self.folder.main_ui.spinBox_0.setValue(self.file_manager.header_threshold)  # 设置默认值
         self.folder.main_ui.spinBox_0.valueChanged.connect(lambda val: self.file_manager.change_header_threshold(val))
         if not hasattr(self, 'folder') or self.folder is None:
             self.folder = Folder(self)  # 让 Folder 依赖 MainWindow
@@ -267,7 +317,7 @@ class MainWindow(QMainWindow):
         '''
         更新左侧y轴颜色
         '''
-        if self.main_ui.comboBox2_3.currentText() == "":
+        if self.main_ui.comboBox2_3.currentText() == "" or self.main_ui.comboBox2_5.currentText() == "":
             return
         # 更新左侧y轴颜色
         master_var = self.main_ui.comboBox2_3.currentText()
@@ -315,7 +365,7 @@ class MainWindow(QMainWindow):
         '''
         更新右侧y轴颜色
         '''
-        if self.main_ui.comboBox2_4.currentText() == "":
+        if self.main_ui.comboBox2_4.currentText() == "" or self.main_ui.comboBox2_6.currentText() == "":
             return
         # 更新右侧y轴颜色
         slave_var = self.main_ui.comboBox2_4.currentText()

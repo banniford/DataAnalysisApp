@@ -15,7 +15,7 @@ class FileManager:
         self.folder_path = None
         self.csv_files = []
         self.df = None
-        self.header_threshold = 15
+        self.header_threshold = 8  # 默认阈值，表示列数大于等于 8 的行才是表头
 
     def change_header_threshold(self, value):
         self.header_threshold = value
