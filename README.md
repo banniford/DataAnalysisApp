@@ -31,3 +31,7 @@ pipreqs . --force
 ```shell
 pyinstaller --clean -F -w -i assets/image/faviceon.ico --add-data "assets/font;assets/font" --add-data "assets/image;assets/image" --collect-submodules numpy --collect-data numpy --collect-submodules matplotlib --collect-data matplotlib src/DataAnalysisApp.py
 ```
+
+注意：英文系统打包完成后无法使用中文重命名启动
+
+![效果图](./doc/UI.png)
